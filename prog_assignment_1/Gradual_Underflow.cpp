@@ -1,6 +1,6 @@
 /* 
  * File:   Gradual_Underflow.cpp
- * Author: Vishisht
+ * Author: Vishisht/Deepak
  *
  * Created on February 12, 2018, 7:17 PM
  */
@@ -32,14 +32,44 @@ public:
         temp = 1.234567890123456;
     }
 
+    void x_minus_y() {
+        float base1 = 4.90;
+        float base2 = 4.91;
+        //double x = 1.1011 * pow(2, -1020); 
+        double x = base1 * pow(10, -320); 
+        double y = base2 * pow(10, -320); 
+        //double y = 1.1010 * pow(2, -1020);
+        
+        for(int i=0; i<200; i++) {
+
+            if(x - y == 0)
+                cout << "x-y==0 is true for iter " << i << endl;
+    
+            if(x == y)
+                cout << "x==y is true for iter " << i << endl;
+
+            x = base1 * pow(10, -307); 
+            y = base2 * pow(10, -307); 
+
+            base1 = base1 * 0.9;
+            base2 = base2 * 0.9;
+
+            //x = x/5;
+            //y = y/5;
+            //power = power - 1;
+
+        }
+    }
+
 };
 
-int mhjhj(int argc, char** argv) {
+int main(int argc, char** argv) {
     
     // Create the first object
     Gradual_Underflow *gradualUnderflowTesting = new Gradual_Underflow();
     
     gradualUnderflowTesting->third();
+    gradualUnderflowTesting->x_minus_y();
 
 
     return 0;
