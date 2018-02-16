@@ -11,7 +11,8 @@ int main(int argc, char** argv) {
     
     // Run integer overflow operations
     Integer_Overflow *overflowIntegerTesting = new Integer_Overflow();
-    overflowIntegerTesting->TestMult();
+    overflowIntegerTesting->TestMult(3);
+    overflowIntegerTesting->TestMult(2);
     overflowIntegerTesting->TestFact();
     overflowIntegerTesting->TestFibonacci();
     overflowIntegerTesting->DivbyZero();

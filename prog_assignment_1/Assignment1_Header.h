@@ -50,7 +50,7 @@ class Integer_Overflow
 {
 private:
 public:
-    void TestMult();
+    void TestMult(int num);
     void TestFact();
     void TestFibonacci();
     void DivbyZero();
