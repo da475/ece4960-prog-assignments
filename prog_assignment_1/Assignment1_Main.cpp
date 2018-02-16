@@ -44,8 +44,8 @@ int main(int argc, char** argv) {
     gradualUnderflowTesting->x_div_y();
     
     // Check Pi precision
-    //Calculate_Pi *calculatePITesting = new Calculate_Pi();
-    //calculatePITesting->precision_30();
+    Calculate_Pi *calculatePITesting = new Calculate_Pi();
+    cout << "Pi is " << calculatePITesting->precision_30() << endl << endl;
 
     return 0;
 }

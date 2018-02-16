@@ -45,7 +45,7 @@ void Gradual_Underflow::x_minus_y()
 
     cout << "X and Y were initially set to 4.50e-300 and 4.51e-300 and their substraction (x-y) was calculated." << endl;
     cout << "Then both X and Y were divided by 10, so reach the minimum for double precision floating point" << endl;
-    cout << "At iteration number " << i << ", both the conditions (X==Y) and (X-Y == 0) got true which means the gradual underflow is supported in MacOS" << endl << endl;
+    cout << "At iteration number " << i << ", both the conditions (X==Y) and (X-Y == 0) got true which means the gradual underflow is supported in the compiler" << endl << endl;
 
 }
 

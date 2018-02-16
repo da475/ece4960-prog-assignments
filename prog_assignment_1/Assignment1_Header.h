@@ -41,8 +41,8 @@ public:
         if (x > numeric_limits<double>::max() && x > 0) return "Positive Infinity";
         if (x < -numeric_limits<double>::max() && x < 0) return "Negative Infinity";
         if (x != x) return "NAN";
-        if (x == 1/INF) return "Positive Zero";
-        if (x == 1/NINF) return "Negative Zero";
+        if (x == 0.0 && !signbit(x)) return "Positive Zero";
+        if (x == 0.0 && signbit(x)) return "Negative Zero";
         // If none of the other exceptions occurred then return the string
         return (to_string(x) + " which is neither an exception nor signed zero");
     }
@@ -103,6 +103,8 @@ public:
 class Calculate_Pi{
 private: 
 public:
-    void precision_30();
+    long double sqroot(long double);
+    long double logcal(long double);
+    long double precision_30();
 };
 #endif /* ASSIGNMENT1_HEADER_H */
