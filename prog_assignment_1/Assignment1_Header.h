@@ -87,6 +87,7 @@ private:
     double temp;
 public:
     void x_minus_y();
+    void x_div_y();
     void underFlow_Using_Sin();
     Gradual_Underflow();
 };
