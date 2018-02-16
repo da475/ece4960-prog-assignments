@@ -20,19 +20,22 @@ class Calc_Pi{
     
 public:
     void precision_30() {
-        int num1 = 640320;
-        int num2 = 3;
-        long long mult = (num1 * num1 * num1) + 744;
-        cout << "mult value " << mult << endl;
-        //long long mult = 30000;
-        double log_val = log(mult);
-        cout << "log value " << log_val << endl;
-        double root_val = sqrt(163);
-        double pi_val = log_val / root_val;
-        cout << "pi value " << pi_val << endl;
-    }
+        long double num1 = 640320;
+        long double num2 = 744;
 
+        cout.precision(30);
+        long double numer = pow(num1, 3) + num2;
+        long double logval = log(numer);
+        cout << "num is " << numer << endl; 
+        cout << "log is " << log(numer) << endl; 
     
+
+        long double root_val = sqrt(163);
+        long double pi_val = logval / root_val;
+        cout << "root value " << root_val << endl;
+        cout << "pi value " << pi_val << endl;
+
+    }
 };
 
 
