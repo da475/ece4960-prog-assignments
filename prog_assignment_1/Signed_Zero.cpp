@@ -1,23 +1,14 @@
 /* 
  * File:   Signed_Zero.cpp
- * Author: Vishisht
+ * Author: Deepak, Vishisht
  *
  * Created on February 12, 2018, 5:15 PM
  */
 
-#include <iostream>
-#include <math.h>
-#include <stdlib.h>
-#include <cstdlib>
-#include <cmath>
-
-using namespace std;
+#include "Assignment1_Header.h"
 
 class Signed_Zero{
 private:
-    double INF;
-    double POSZERO;
-    double NEGZERO;
     
 public:
     void Log_Operations() {
@@ -39,19 +30,24 @@ public:
     }
     
     Signed_Zero() {
-        INF = numeric_limits<double>::infinity();
-        POSZERO = 1/INF;
-        NEGZERO = 1/-INF;
+        if (Global_Functions::Check_For_Exceptions_Zeros(POSZERO) == "Positive Zero") 
+        {
+            cout << "Positive Zero value has been detected and tested after generation" << endl;
+        }
+        else
+        {
+            cout << "The number used for Positive Zero operations is not Positive Zero. The program will exit now." << endl;
+            exit (EXIT_FAILURE);
+        }
+        
+        if (Global_Functions::Check_For_Exceptions_Zeros(NEGZERO) == "Negative Zero") 
+        {
+            cout << "Negative Zero value has been detected and tested after generation" << endl;
+        }
+        else
+        {
+            cout << "The number used for Negative Zero operations is not Negative Zero. The program will exit now." << endl;
+            exit (EXIT_FAILURE);
+        }
     }
 };
-
-int callingFunction3(int argc, char** argv) {
-    
-    // Create the first object
-    Signed_Zero *signedZeroTesting = new Signed_Zero();
-    signedZeroTesting->Log_Operations();
-    signedZeroTesting->Sinc_Operations();
-    signedZeroTesting->Sinc_With_Absolute_Operations();
-
-    return 0;
-}
