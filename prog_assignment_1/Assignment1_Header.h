@@ -1,15 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
  * File:   Assignment1_Header.h
  * Author: Deepak, Vishisht
  *
  * Created on February 15, 2018, 10:01 PM
  */
+
+// Including all classes
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
@@ -21,31 +17,38 @@
 #ifndef ASSIGNMENT1_HEADER_H
 #define ASSIGNMENT1_HEADER_H
 
+// Defining constants
 #define INT_VAL_MAX 2147483647
 #define INT_VAL_MIN -2147483647
 
 using namespace std;
 
+// Global Variables
 extern double INF;
 extern double NINF;
 extern double NANVAL;
 extern double POSZERO;
 extern double NEGZERO;
 
+// Global Functions
 class Global_Functions
 {
 private:
 public:
+    // Function for checking exceptions or signed zero
     static string Check_For_Exceptions_Zeros(double x) {
-        if (isinf(x) && !signbit(x)) return "Positive Infinity";
-        if (isinf(x) && signbit(x)) return "Negative Infinity";
-        if (isnan(x)) return "NAN";
-        if (x == 0.0 && !signbit(x)) return "Positive Zero";
-        if (x == 0.0 && signbit(x)) return "Negative Zero";
-        return to_string(x);
+        cout << x<< endl;
+        if (x > numeric_limits<double>::max() && x > 0) return "Positive Infinity";
+        if (x < -numeric_limits<double>::max() && x < 0) return "Negative Infinity";
+        if (x != x) return "NAN";
+        if (x == 1/INF) return "Positive Zero";
+        if (x == 1/NINF) return "Negative Zero";
+        // If none of the other exceptions occurred then return the string
+        return (to_string(x) + " which is neither an exception nor signed zero");
     }
 };
 
+// Declaration of Integer_Overflow class
 class Integer_Overflow
 {
 private:
@@ -56,13 +59,16 @@ public:
     void DivbyZero();
 };
 
+// Declaration of Floating_Overflow class
 class Floating_Overflow
 {
 private:   
 public:
-    void TestPowerIterations();
+    void TestPowerIterationsUsingFlag();
+    void TestPowerIterationsUsingDivision();
 };
 
+// Declaration of Floating_Operations class
 class Floating_Operations{
 private:   
 public:
@@ -73,6 +79,7 @@ public:
     Floating_Operations();
 };
 
+// Declaration of Signed_Zero class
 class Signed_Zero{
 private:
 public:
@@ -82,6 +89,7 @@ public:
     Signed_Zero();
 };
 
+// Declaration of Gradual_Underflow class
 class Gradual_Underflow{
 private:
     double temp;
@@ -91,5 +99,10 @@ public:
     void underFlow_Using_Sin();
     Gradual_Underflow();
 };
-#endif /* ASSIGNMENT1_HEADER_H */
 
+class Calculate_Pi{
+private: 
+public:
+    void precision_30();
+};
+#endif /* ASSIGNMENT1_HEADER_H */

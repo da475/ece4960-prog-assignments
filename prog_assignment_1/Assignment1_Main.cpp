@@ -5,8 +5,10 @@
  * Created on February 16, 2018, 1:06 AM
  */
 
+// Including the common header
 #include "Assignment1_Header.h"
 
+// Main function of the program
 int main(int argc, char** argv) {
     
     // Run integer overflow operations
@@ -19,7 +21,8 @@ int main(int argc, char** argv) {
     
     // Run floating-point overflow operations
     Floating_Overflow *overflowDoubleTesting = new Floating_Overflow();
-    overflowDoubleTesting->TestPowerIterations();
+    overflowDoubleTesting->TestPowerIterationsUsingFlag();
+    overflowDoubleTesting->TestPowerIterationsUsingDivision();
     
     // Run floating-point operations
     Floating_Operations *operationsTesting = new Floating_Operations();
@@ -39,6 +42,10 @@ int main(int argc, char** argv) {
     gradualUnderflowTesting->underFlow_Using_Sin();
     gradualUnderflowTesting->x_minus_y();
     gradualUnderflowTesting->x_div_y();
+    
+    // Check Pi precision
+    //Calculate_Pi *calculatePITesting = new Calculate_Pi();
+    //calculatePITesting->precision_30();
 
     return 0;
 }
