@@ -7,32 +7,25 @@
 
 #include "Assignment1_Header.h"
 
-class Floating_Overflow
+void Floating_Overflow::TestPowerIterations() 
 {
-private:
-    
-public:
-    
-    void TestPowerIterations() 
+    double result = 1;
+    int power = 0;
+    feclearexcept(FE_OVERFLOW);
+    while (fetestexcept(FE_OVERFLOW) == 0) 
     {
-        double result = 1;
-        int power = 0;
-        feclearexcept(FE_OVERFLOW);
-        while (fetestexcept(FE_OVERFLOW) == 0) 
+        power++;
+        result *= 10;
+        if (fetestexcept(FE_OVERFLOW) != 0) 
         {
-            power++;
-            result *= 10;
-            if (fetestexcept(FE_OVERFLOW) != 0) 
-            {
-                cout << "At " << power << "th iteration, the floating point overflowed" << endl;
-                cout << "Hence double overflowed at 10^" << power << " value" << endl;
-            }
+            cout << "At " << power << "th iteration, the floating point overflowed" << endl;
+            cout << "Hence double overflowed at 10^" << power << " value" << endl;
         }
-        cout << endl;
-        
-        
-        // Maybe by several checks he means factorial fibonacci etc.
-        
-        
     }
-};
+    cout << endl;
+
+
+    // Maybe by several checks he means factorial fibonacci etc.
+
+
+}

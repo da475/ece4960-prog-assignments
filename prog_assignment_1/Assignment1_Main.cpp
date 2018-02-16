@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
  * File:   Assignment1_Main.cpp
  * Author: Deepak, Vishisht
@@ -14,7 +8,7 @@
 #include "Assignment1_Header.h"
 
 int main(int argc, char** argv) {
-    
+    /*
     Integer_Overflow *overflowIntegerTesting = new Integer_Overflow();
     overflowIntegerTesting->TestMult();
     overflowIntegerTesting->TestFact();
@@ -34,6 +28,11 @@ int main(int argc, char** argv) {
     signedZeroTesting->Log_Operations();
     signedZeroTesting->Sinc_Operations();
     signedZeroTesting->Sinc_With_Absolute_Operations();
+    */
+    
+    Gradual_Underflow *gradualUnderflowTesting = new Gradual_Underflow();
+    gradualUnderflowTesting->underFlow_Using_Sin();
+    gradualUnderflowTesting->x_minus_y();
 
     return 0;
 }

@@ -6,7 +6,7 @@
 
 /* 
  * File:   Assignment1_Header.h
- * Author: Vishisht
+ * Author: Deepak, Vishisht
  *
  * Created on February 15, 2018, 10:01 PM
  */
@@ -22,6 +22,7 @@
 #define ASSIGNMENT1_HEADER_H
 
 #define INT_VAL_MAX 2147483647
+#define INT_VAL_MIN -2147483647
 
 using namespace std;
 
@@ -41,10 +42,53 @@ public:
         if (isnan(x)) return "NAN";
         if (x == 0.0 && !signbit(x)) return "Positive Zero";
         if (x == 0.0 && signbit(x)) return "Negative Zero";
-        return "Neither Positive Infinity, nor Negative Infinity nor NAN nor 0";
+        return to_string(x);
     }
 };
 
+class Integer_Overflow
+{
+private:
+public:
+    void TestMult();
+    void TestFact();
+    void TestFibonacci();
+    void DivbyZero();
+};
 
+class Floating_Overflow
+{
+private:   
+public:
+    void TestPowerIterations();
+};
+
+class Floating_Operations{
+private:   
+public:
+    void INF_Operations();
+    void NINF_Operations();
+    void NAN_Operations();
+    void Prop_And_Interaction();
+    Floating_Operations();
+};
+
+class Signed_Zero{
+private:
+public:
+    void Log_Operations();
+    void Sinc_Operations();
+    void Sinc_With_Absolute_Operations();
+    Signed_Zero();
+};
+
+class Gradual_Underflow{
+private:
+    double temp;
+public:
+    void x_minus_y();
+    void underFlow_Using_Sin();
+    Gradual_Underflow();
+};
 #endif /* ASSIGNMENT1_HEADER_H */
 
