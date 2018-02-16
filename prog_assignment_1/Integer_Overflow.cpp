@@ -1,92 +1,85 @@
 /* 
  * File:   Integer_Overflow.cpp
- * Author: Deepak
+ * Author: Deepak,Vishisht
  *
  * Created on February 12, 2018
  */
 
-#include <iostream>
-#include <math.h>
-#include <stdlib.h>
-#include <cstdlib>
-#include <cmath>
-#include <cfenv>
+#include "Assignment1_Header.h"
 
-using namespace std;
-
-#define INT_VAL_MAX 2147483647
-
-class Integer_Overflow{
+class Integer_Overflow
+{
 private:
     
 public:
-    void TestMult() {
+    void TestMult() 
+    {
         int num1 = 1000000000;
         int num2 = 3;
         int mult = num1 * num2;
-        if(mult < 0)
-            cout << "Integer overflow occurred" << endl;
+        if((mult/num1 != num2))
+            cout << "Integer overflow occurred when " << num1 << " was multiplied with " << num2 <<  endl;
+        else
+            cout << "Integer overflow did not occur occur when " << num1 << " was multiplied with " << num2 <<  endl;
+        cout << endl;
     }
 
-    void TestFact() {
-        int n;
-        cout << "Enter the number for fact " << endl;
-        cin >> n;
-        if (n < 0) return;
-        if (n == 1 || n == 0) return;
-
+    void TestFact() 
+    {
+        cout << "All factorials from 1 onwards are being computed. The first factorial for which integer type overflows, will be reported" << endl;
+        int prevFactorial = 1;
         int fact = 1;
-        for(int i=2; i<=n; i++) {
-            fact = fact * i;
-            if (fact < 0) {
-                cout << "Overflow occurred, returning max" << endl;
-                return;
+        int n = 0;
+        bool overflown = false;
+        while(!overflown) 
+        {
+            n++;
+            fact *= n;
+            if ((int)((fact/n)/prevFactorial) != 1) 
+            {
+                cout << "Integer overflow has occurred while computing factorial of: " << n << endl;
+                overflown = true;
             }
+            prevFactorial = fact;
         }
-        cout << "Factorial of " << n << " is " << fact << endl;
+        cout << endl;
     }
 
 
-    void TestFibonacci() {
-        int n;
-        cout << "Enter the number for fibonacci " << endl;
-        cin >> n;
-        if (n <= 1) return;
-
-        int first = 0;
-        int second = 1;
-        int fib = 1;
-
-        for(int i=0; i<n; i++) {
-            fib = second + first;
-            first = second;
-            second = fib;
-            if (fib < 0) {
-                cout << "Overflow occurred, returning max" << endl;
-                return;
+    void TestFibonacci() 
+    {
+        cout << "Fibonacci sequence of lengths from 1 onwards are being computed. The first sequence for which integer type overflows, will be reported" << endl;
+        int prevNumber = 0;
+        int currNumber = 1;
+        int newNumber = 1;
+        int n = 0;
+        bool overflown = false;
+        while(!overflown) 
+        {
+            n++;
+            newNumber = currNumber + prevNumber;
+            if (((newNumber < currNumber) && (newNumber < prevNumber)) != 0)
+            {
+                cout << "Integer overflow has occurred while computing fibonacci of sequence length: " << n << endl;
+                overflown = true;
             }
+            prevNumber = currNumber;
+            currNumber = newNumber;
         }
-        cout << "Fib of " << n << " is " << fib << endl;
+        cout << endl;
     }
 
     void DivbyZero() {
-        int x = 0;
-        int y = 4/x;
-        cout << "4 div 0 is " << y << endl;
+        string str;
+        cout << "The program is going to implement division by zero. This will crash the program. If you want to implement then type 'cont'. Type anything "
+                "else to skip this program." << endl;
+        cin >> str;
+        //if ((!str.compare("cont")) || (!str.compare("Cont")))
+        if ((str == "cont") || (str == "Cont"))
+        {
+            int x = 0;
+            int y = 4/x;
+            cout << "4 div 0 is " << y << endl;
+        }
     }
-    
 };
-
-
-int main(int argc, char** argv) {
-    
-    // Create the first object
-    Integer_Overflow *overflowTesting = new Integer_Overflow();
-    overflowTesting->TestMult();
-    overflowTesting->TestFibonacci();
-    overflowTesting->DivbyZero();
-
-    return 0;
-}
-
-
