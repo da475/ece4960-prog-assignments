@@ -1,6 +1,6 @@
 /* 
  * File:   Floating_Operations.cpp
- * Author: Deepak, Vishisht
+ * Author: Vishisht, Deepak
  *
  * Created on February 12, 2018, 4:53 PM
  */

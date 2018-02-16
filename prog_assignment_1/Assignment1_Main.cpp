@@ -1,6 +1,6 @@
 /* 
  * File:   Assignment1_Main.cpp
- * Author: Deepak, Vishisht
+ * Author: Vishisht, Deepak
  *
  * Created on February 16, 2018, 1:06 AM
  */
