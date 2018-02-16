@@ -37,7 +37,6 @@ private:
 public:
     // Function for checking exceptions or signed zero
     static string Check_For_Exceptions_Zeros(double x) {
-        cout << x<< endl;
         if (x > numeric_limits<double>::max() && x > 0) return "Positive Infinity";
         if (x < -numeric_limits<double>::max() && x < 0) return "Negative Infinity";
         if (x != x) return "NAN";
