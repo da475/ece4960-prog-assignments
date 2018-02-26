@@ -19,6 +19,10 @@ public:
     convertToSparseBetter();
     convertToSparseBetter(const convertToSparseBetter& orig);
     virtual ~convertToSparseBetter();
+    void rowPermuteMatrix(int i, int j, double a);
+    void rowPermuteSparse(int i, int j);
+    void rowScaleMatrix(int i, int j, double a);
+    void rowScaleSparse(int i, int j, double a);
 private:
 
 };

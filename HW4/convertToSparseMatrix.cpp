@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <math.h>
 #include <stdlib.h>
 #include <cstdlib>
@@ -122,7 +123,7 @@ public:
         int nZSizeOfFirst = rowPtr[i] - rowPtr[i-1];
         int nZSizeOfSecond = rowPtr[j] - rowPtr[j-1];
         
-        counter = 0;
+        int counter = 0;
         for (int k = rowPtr[j-1]; k < rowPtr[j-1] + nZSizeOfSecond; k++) {
             rowPtr[k] = value[i*rank - k]*a;
         }
@@ -132,7 +133,7 @@ public:
         i--, j--;
         
         for (int k= 0; k < rank; k++) {
-            arr[j * rank + k] *= arrX[i * rank + k];
+            arr[j * rank + k] *= arr[i * rank + k];
         }
     }
     
@@ -142,12 +143,13 @@ public:
         int nZSizeOfFirst = rowPtr[i] - rowPtr[i-1];
         int nZSizeOfSecond = rowPtr[j] - rowPtr[j-1];
         
-        counter = 0;
+        int counter = 0;
         for (int k = rowPtr[j-1]; k < rowPtr[j-1] + nZSizeOfSecond; k++) {
             rowPtr[k] = value[i*rank - k]*a;
         }
     }
     
+    // Constructor for small matrices
     sparseMatrix(int *arr, int rank, long nZ = -1) {
         cout << endl;
         for(int i=0; i<rank; i++) {
@@ -159,7 +161,27 @@ public:
         this->arr = arr;
         this->rank = rank;
         this->nZ = nZ;
+        this->value = NULL;
+        this->rowPtr = NULL;
+        this->colInd = NULL;
     }
+
+    // Constructor for very large matrices
+    sparseMatrix(int *row, int *col, int *val) {
+        this->arr = NULL;
+        this->value = val;
+        this->rowPtr = row;
+        this->colInd = col;
+    }
+
+    // Destructor
+    ~sparseMatrix() {
+        if (this->arr) free(this->arr);
+        if (this->value) free(this->value);
+        if (this->rowPtr) free(this->rowPtr);
+        if (this->colInd) free(this->colInd);
+    }
+
 };
 
 // Change to main function when implementing this program
@@ -171,5 +193,66 @@ int main(){
     first->rowPermuteMatrix(2,5);
     first->rowPermuteSparse(2,5);
     
+
+    //######  LOAD MATRIX FILE
+
+    ifstream matfile;
+    matfile.open("memplus.mtx");
+    if (!matfile) {
+        cout << "Couldn't open the file" << endl;
+        exit(1);
+    }
+
+    string firstline;
+    getline(matfile, firstline);
+
+    int rowind, colind, nz;
+    matfile >> rowind >> colind >> nz;
+    cout << "row " << rowind << endl;
+    cout << "col " << colind << endl;
+    cout << "value " << nz << endl;
+
+    int rank = rowind;
+    int *valarr = (int*)malloc (sizeof(int) * nz);
+    int *rowarr = (int*)malloc (sizeof(int) * nz);
+    int *colarr = (int*)malloc (sizeof(int) * nz);
+
+    int i=0;    
+
+    getline(matfile, firstline);
+    cout << firstline << endl;
+
+    string delim = " ";
+    string token;
+    size_t pos = 0;
+
+    i = 0;
+    while(!matfile.eof()) {
+        getline(matfile, firstline);
+
+        pos = firstline.find(delim);
+        token = firstline.substr(0, pos);
+        rowarr[i] = stoi(token);
+        firstline.erase(0, pos + delim.length());
+
+
+        pos = firstline.find(delim);
+        token = firstline.substr(0, pos);
+        colarr[i] = stoi(token);
+        firstline.erase(0, pos + delim.length());
+
+        pos = firstline.find(delim);
+        token = firstline.substr(0, pos);
+        valarr[i] = stoi(token);
+        firstline.erase(0, pos + delim.length());
+
+        i++;
+
+    }
+
+    matfile.close();
+
     return 0;
 }
+
+
