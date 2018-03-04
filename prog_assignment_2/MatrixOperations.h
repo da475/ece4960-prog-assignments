@@ -35,37 +35,37 @@ public:
     // Destructor
     ~MatrixOperations();
 
+    // Function to print a matrix in full-matrix format
+    void printMatrixFull();
+
+    // Function to print a matrix in full-matrix format
+    void printMatrixSparse();
+
     // Function to convert a matrix to row-compressed format
     void createMatrix();
 
 
     // Function to do row-permutation operation in full matrix format
-    // Input arguments: row i and row j (matrix is part of private member of the class)
     void rowPermuteFull(int i, int j);
 
 
     // Function to do row-permutation operation in sparse matrix format
-    // Input arguments: row i and row j (matrix is part of private member of the class)
     void rowPermuteSparse(int i, int j);
 
 
     // Function to do row-scaling operation in full matrix format
-    // Input arguments: row i, row j and scaling factor a (matrix is part of private member of the class)
     void rowScaleFull(int i, int j, double a);
 
 
     // Function to do row-scaling operation in sparse matrix format
-    // Input arguments: row i, row j and scaling factor a (matrix is part of private member of the class)
     void rowScaleSparse(int i, int j, double a);
 
 
     // Function to do product operation in full matrix format
-    // Input arguments: row i, row j and scaling factor a (matrix is part of private member of the class)
     void productAxFull(int i, int j, double a);
 
 
     // Function to do product operation in sparse matrix format
-    // Input arguments: row i, row j and scaling factor a (matrix is part of private member of the class)
     void productAxSparse(int i, int j, double a);
 
 };

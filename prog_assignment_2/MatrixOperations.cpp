@@ -12,6 +12,34 @@
 // std::cout becomes cout
 using namespace std;
 
+// Function to print a matrix in full-compressed format
+void MatrixOperations::printMatrixFull() {
+    
+    cout << "Matrix in full-format is" << endl << endl;
+    for (int i = 0; i < rank; i++) {
+        for (int j = 0; j < rank; j++) {
+            cout << arr[i*rank + j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl << endl;
+    return;
+}
+
+// Function to print a matrix in row-compressed format
+void MatrixOperations::printMatrixSparse() {
+    
+    cout << "Matrix in row-format is" << endl << endl;
+    for (int i = 0; i <= rank; i++) {
+        for (int j = rowPtr[i]; j < rowPtr[i+1]; j++) {
+            cout << value[j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl << endl;
+    return;
+}
+
 // Function to convert a matrix to row-compressed format
 void MatrixOperations::createMatrix() {
     cout << endl;
@@ -45,22 +73,29 @@ void MatrixOperations::createMatrix() {
 
 // Function to do row-permutation operation in full matrix format
 // Input arguments: row i and row j (matrix is part of private member of the class)
+// Note: row index starts from 0
 void MatrixOperations::rowPermuteFull(int i, int j) {
     cout << endl;
-    i--, j--;
+    i--;
+    j--;
     int temp;
-
-    for (int k= 0; k < rank; k++) {
+    // swap the elements
+    for (int k = 0; k < rank; k++) {
         temp = arr[i * rank + k];
         arr[i * rank + k] = arr[j * rank + k];
         arr[j * rank + k] = temp;
     }
+    
+    cout << "Perumation performed in full-format between " << i+1 << " " << j+1 << endl << endl;
+    return;
+
 }
 
 // Function to do row-permutation operation in sparse matrix format
 // Input arguments: row i and row j (matrix is part of private member of the class)
 void MatrixOperations::rowPermuteSparse(int i, int j) {
     cout << endl;
+
     int nZSizeOfFirst = rowPtr[i] - rowPtr[i-1];
     int nZSizeOfSecond = rowPtr[j] - rowPtr[j-1];
 
@@ -71,18 +106,26 @@ void MatrixOperations::rowPermuteSparse(int i, int j) {
     int tempSecondArrayColInd[nZSizeOfSecond];
 
     int counter = 0;
-    for (int k = rowPtr[i-1]; k < rowPtr[i-1] + nZSizeOfFirst; k++) {
+
+    // Copy the value and col for first row in a temp array
+    for (int k = rowPtr[i-1]; k < rowPtr[i]; k++) {
         tempFirstArrayValue[counter] = value[k];
         tempFirstArrayColInd[counter] = colInd[k];
         counter++;
     }
+
     counter = 0;
-    for (int k = rowPtr[j-1]; k < rowPtr[j-1] + nZSizeOfSecond; k++) {
+
+    // Copy the value and col for second row in a temp array
+    for (int k = rowPtr[j-1]; k < rowPtr[j]; k++) {
         tempSecondArrayValue[counter] = value[k];
         tempSecondArrayColInd[counter] = colInd[k];
         counter++;
     }
 
+    // shift original col and val array by difference in no of elements of both rows
+    // if row1 has more elements than row2, array will shift leftwards
+    // if row1 has less elements than row2, array will shift rightwards
     for (int k = rowPtr[i]; k < rowPtr[j] - 1; k++) {
         colInd[k - (nZSizeOfFirst - nZSizeOfSecond)] = colInd[k];
         value[k - (nZSizeOfFirst - nZSizeOfSecond)] = value[k];
@@ -104,10 +147,14 @@ void MatrixOperations::rowPermuteSparse(int i, int j) {
     for (int k = i; k < j; k++) {
         rowPtr[k] -= nZSizeOfFirst - nZSizeOfSecond;
     }
+
+    cout << "Perumation performed in row-compressed format between " << i << " " << j << endl << endl;
+    return;
 }
 
 // Function to do row-scaling operation in full matrix format
 // Input arguments: row i, row j and scaling factor a (matrix is part of private member of the class)
+// Result: row[j] = row[j] + row[i]*a
 void MatrixOperations::rowScaleFull(int i, int j, double a) {
     cout << endl;
     i--, j--;
@@ -125,6 +172,11 @@ void MatrixOperations::rowScaleSparse(int i, int j, double a) {
     int nZSizeOfFirst = rowPtr[i] - rowPtr[i-1];
     int nZSizeOfSecond = rowPtr[j] - rowPtr[j-1];
 
+
+    int tempFirstArrayValue[nZSizeOfFirst];
+    int tempSecondArrayValue[nZSizeOfSecond];
+    int tempFirstArrayColInd[nZSizeOfFirst];
+    int tempSecondArrayColInd[nZSizeOfSecond];
     int counter = 0;
     for (int k = rowPtr[j-1]; k < rowPtr[j-1] + nZSizeOfSecond; k++) {
         rowPtr[k] = value[i*rank - k]*a;
@@ -161,12 +213,13 @@ void MatrixOperations::productAxSparse(int i, int j, double a) {
 // It loads the matrix in 'arr' along with other information
 MatrixOperations::MatrixOperations(int *arr, int rank, long nZ = -1) {
     cout << endl;
+/*
     for(int i=0; i<rank; i++) {
         for(int j=0; j<rank; j++) {
             cout << arr[i * rank + j] << " ";
         }
         cout << endl;
-    }
+    }*/
     this->arr = arr;
     this->rank = rank;
     this->nZ = nZ;
@@ -194,16 +247,29 @@ MatrixOperations::~MatrixOperations() {
 
 int main() {
 
-    int arr[5][5] = {{1,2,0,0,3}, {4,5,6,0,0}, {0,7,8,0,9}, {0,0,0,10,0}, {11, 0, 0 , 0, 12}};
+    int arr[5][5] = {
+                    {1, 2, 0, 0, 3}, 
+                    {4, 5, 6, 0, 0}, 
+                    {0, 7, 8, 0, 9}, 
+                    {0, 0, 0, 10, 0}, 
+                    {11,0, 0, 0, 12}
+                    };
 
     MatrixOperations *first = new MatrixOperations((int*)arr, 5);
     first->createMatrix();
+
+    first->printMatrixFull();
     first->rowPermuteFull(2,5);
+    first->printMatrixFull();
+
+    first->printMatrixSparse();
     first->rowPermuteSparse(2,5);
+    first->printMatrixSparse();
 
 
     // ###########  LOAD MATRIX FILE   #############
 
+#if 0
     ifstream matfile;
     matfile.open("memplus.mtx");
     if (!matfile) {
@@ -260,6 +326,8 @@ int main() {
 
 //    for(i=0; i<20; i++)
 //        cout << rowarr[i] << endl;
+
+#endif
 
     return 0;
 }
