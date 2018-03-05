@@ -30,7 +30,7 @@ public:
     MatrixOperations(int *arr, int rank, long nZ);
 
     // Constructor for very large matrices which cannot be loaded in full-matrix form
-    MatrixOperations(int *row, int *col, int *val);
+    MatrixOperations(int *row, int *col, int *val, int nonzero);
 
     // Destructor
     ~MatrixOperations();
