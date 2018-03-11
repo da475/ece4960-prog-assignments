@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     full_Vector *bJacobiCheck1 = new full_Vector();
     full_Vector *bJacobiCheck2 = new full_Vector();
     
-    cout << "Result for b = [1,0,0,0,....,0]" << endl;
+    cout << endl << endl << "Result for b = [1,0,0,0,....,0]" << endl;
     // Implement full matrix and sparse matrix jacobi with b(all 0s)
     Jacobi *implementation_Jacobi1 = new Jacobi(AJacobi, bJacobi1, xJacobi1);
     Jacobi *implementation_Jacobi2 = new Jacobi(load->get_Sparse_Matrix(), bJacobi1, xJacobi2);
