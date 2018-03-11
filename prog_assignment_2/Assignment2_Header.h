@@ -1,8 +1,12 @@
 /* 
- * File:   Assignment2_Header.h
  * Author: Vishisht, Deepak
- *
+ * Netids: vmt28 and da475
+ * Copyright @ 2018 Vishisht and Deepak. All rights reserved
+
  * Created on March 4, 2018, 8:23 PM
+ * File:   Assignment2_Header.h
+ * Desc: Main header file defining a class of global functions 
+         and declaring other classes
  */
 
 // Including all classes
@@ -25,7 +29,7 @@
 #define IS_NAN 3
 #define ERROR 4
 #define UNMATCHED_NZ 5
-#define EXCEPTION_HANDLING false
+#define EXCEPTION_HANDLING false    // Macro to enable exception handling
 
 using namespace std;
 
@@ -50,14 +54,25 @@ typedef struct {
     int rank;
 }full_Vector;
 
-// Global Functions
+/* Class: Global_Functions
+Description: Class of statically defined generic functions which
+            can be used by any other class.
+*/
 class Global_Functions
 {
 private:
 public:
+
+    // Function: Create_Pointer_From_Matrix
+    // Allocates a matrix dynamically of a given rank
+    // and copies the elements to it from a given array
+    // Input: array and rank
+    // Output: Full-matrix
     static int Create_Pointer_From_Matrix(double *array, full_Matrix *fullMatrix, int rank) 
     {
         fullMatrix->rank = rank;
+
+        // allocate the memory
         fullMatrix->arr = (double *)malloc(rank * rank * sizeof(double));
 
         for (int i = 0; i < fullMatrix->rank; i++) {
@@ -76,9 +91,16 @@ public:
         return NO_ERROR;
     }
     
+    // Function: Create_Pointer_From_Vector
+    // Allocates a vector dynamically of a given rank
+    // and copies the elements to it from a given array
+    // Input: array and rank
+    // Output: Vector
     static int Create_Pointer_From_Vector(double *array, full_Vector *fullVector, int rank) 
     {
         fullVector->rank = rank;
+
+        // allocate the memory
         fullVector->arr = (double *)malloc(rank * sizeof(double));
 
         for (int i = 0; i < fullVector->rank; i++) {
@@ -95,8 +117,14 @@ public:
         return NO_ERROR;
     }
     
+    // Function: Create_Full_Matrix
+    // Allocates a matrix dynamically of the same rank as sparse matrix
+    // and copies the elements from row-compressed matrix to full matrix
+    // Input: Row-compressed Matrix
+    // Output: Full Matrix
     static int Create_Full_Matrix(full_Matrix *fullMatrix, sparse_Matrix *sparseMatrix) 
     {
+        // allocate the memory
         fullMatrix->arr = (double *)malloc(sparseMatrix->rank * sparseMatrix->rank * sizeof(double));
         fullMatrix->rank = sparseMatrix->rank;
         
@@ -129,6 +157,11 @@ public:
         return NO_ERROR;
     }
     
+    // Function: Create_Row_Compressed_Matrix
+    // Allocates a matrix dynamically of the same rank as full-matrix
+    // and copies the elements from input full matrix in row-compressed format
+    // Input: Full Matrix
+    // Output: Sparse Matrix
     static int Create_Row_Compressed_Matrix(full_Matrix *fullMatrix, sparse_Matrix *sparseMatrix) 
     {
         int nZ = 0;
@@ -169,7 +202,10 @@ public:
         return NO_ERROR;
     }
     
-    // Function to print a matrix in full-compressed format
+    // Function: printMatrixFull
+    // Prints a full matrix
+    // Input: Full Matrix
+    // Output: 0 if successful
     static int printMatrixFull(full_Matrix *matrix) {
         cout << endl;
         cout << "Matrix in full-format is" << endl;
@@ -191,7 +227,10 @@ public:
         return NO_ERROR;
     }
     
-    // Function to print a matrix in row-compressed format
+    // Function: printMatrixSparse
+    // Prints a sparse matrix
+    // Input: Row-compressed Matrix
+    // Output: 0 if successful
     static int printMatrixSparse(sparse_Matrix *matrix) {
         cout << endl;
         cout << "Matrix in row-format is" << endl;
@@ -214,7 +253,10 @@ public:
         return NO_ERROR;
     }
     
-    // Function to print a matrix in full-compressed format
+    // Function: printVectorFull
+    // Prints a full vector
+    // Input: Full vector
+    // Output: 0 if successful
     static int printVectorFull(full_Vector *vec) {
         cout << endl;
         cout << "Vector in full-format is" << endl;
@@ -234,10 +276,17 @@ public:
         return NO_ERROR;
     }
     
+    // Function: norm_Full_Sparse_Matrix
+    // Calculates the norm between a full matrix and row-compressed matrix
+    // and compares it to a given tolerance value
+    // Input: Full matrix and row-compressed matrix
+    // Output: ERROR if norm is greater than given tolerance, otherwise NO_ERROR
     static int norm_Full_Sparse_Matrix(full_Matrix *fullMatrix, sparse_Matrix *sparseMatrix) {
+
+        // compare the ranks of the two matrix
         if (fullMatrix->rank != sparseMatrix->rank) return UNMATCHED_RANK;
-        
-        
+
+        // calculate non-zero elements        
         int nZ = 0;
         for (int i = 0; i < fullMatrix->rank; i++) {
             for (int j = 0; j < fullMatrix->rank; j++) {
@@ -269,6 +318,11 @@ public:
         else return ERROR;
     }
     
+    // Function: norm_Matrix_Matrix
+    // Calculates the norm between two full matrices
+    // and compares it to a given tolerance value
+    // Input: Two full matrices
+    // Output: ERROR if norm is greater than given tolerance, otherwise NO_ERROR
     static int norm_Matrix_Matrix(full_Matrix *fullMatrix1, full_Matrix *fullMatrix2) {
         if (fullMatrix1->rank != fullMatrix2->rank) return UNMATCHED_RANK;
 
@@ -294,6 +348,11 @@ public:
         else return ERROR;
     }
     
+    // Function: norm_Vector_Vector
+    // Calculates the norm between two full vecrors
+    // and compares it to a given tolerance value
+    // Input: Two vectors
+    // Output: ERROR if norm is greater than given tolerance, otherwise NO_ERROR
     static int norm_Vector_Vector(full_Vector *fullVector1, full_Vector *fullVector2) {
         if (fullVector1->rank != fullVector2->rank) return UNMATCHED_RANK;
  
@@ -362,6 +421,10 @@ public:
     }
 };
 
+/* Class: Matrix_Operations
+Description: Class to implement permute, scaling and multiply
+            operations on full and row-compressed matrices.
+*/
 class Matrix_Operations {
 private:
 public:
@@ -391,6 +454,10 @@ public:
 
 };
 
+/* Class: Jacobi
+Description: Class to implement iterative solver Jacobi
+            on full and row-compressed matrices.
+*/
 class Jacobi
 {
 private:
@@ -405,10 +472,18 @@ public:
     ~Jacobi();
     
     void Initializing_Matrix();
+
+    // Implement Jacobi method on full-matrix
     void Full_Matrix_Jacobi_Implementation();
+
+    // Implement Jacobi method on row-compressed matrix
     void Row_Compressed_Jacobi_Implementation();
 };
 
+/* Class: Load_Mat1
+Description: Class to implement functions to load row, column and value data
+            from a .csv file and generate a row-compressed matrix using them.
+*/
 class Load_Mat1
 {
 private:
@@ -419,7 +494,8 @@ public:
     
     void find_Number_Of_NonZero_Elements();
     void find_Rank();
-    
+
+    // Functions to load the csv files in an array    
     void load_ColInd();
     void load_RowPtr();
     void load_Value();

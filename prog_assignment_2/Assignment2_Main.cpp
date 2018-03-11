@@ -1,8 +1,12 @@
+
 /* 
- * File:   Assignment2_Main.cpp
  * Author: Vishisht, Deepak
- *
- * Created on March 5, 2018, 12:10 AM
+ * Netids: vmt28 and da475
+ * Copyright @ 2018 Vishisht and Deepak. All rights reserved
+
+ * Created on March 4, 2018, 8:23 PM
+ * File:   Assignment2_Main.cpp
+ * Desc: Main code file to implement matrix solvers and test them
  */
 
 // Including the common header
@@ -10,7 +14,7 @@
 
 // Main function of the program
 int main(int argc, char** argv) {
-    
+
     Matrix_Operations *operations = new Matrix_Operations();
     
     Load_Mat1 *load = new Load_Mat1();
