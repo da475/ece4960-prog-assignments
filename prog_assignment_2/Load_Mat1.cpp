@@ -1,12 +1,18 @@
+
 /* 
- * File:   Load_Mat1.cpp
  * Author: Vishisht, Deepak
- *
- * Created on March 4, 2018, 10:16 PM
- */
+ * Netids: vmt28 and da475
+ * Copyright @ 2018 Vishisht and Deepak. All rights reserved
+
+ * Created on March 4, 2018, 8:23 PM
+ * File: Load_Mat1.cpp
+ * Desc: Code file implmenting functions for the class Load_Mat1 */
 
 #include "Assignment2_Header.h"
 
+// Function: find_Number_Of_NonZero_Elements
+// Counts number of non-zero elements in the matfile
+// from the column csv
 void Load_Mat1::find_Number_Of_NonZero_Elements()
 {
     matrix->nZ = 0;
@@ -22,6 +28,8 @@ void Load_Mat1::find_Number_Of_NonZero_Elements()
     while (getline(matfile, line)) ++matrix->nZ;
 }
 
+// Function: find_Rank
+// Finds the rank from row csv
 void Load_Mat1::find_Rank()
 {
     matrix->rank = 0;
@@ -37,7 +45,8 @@ void Load_Mat1::find_Rank()
     matrix->rank -= 1;
 }
 
-
+// Function: load_ColInd
+// Loads the column csv file into an array
 void Load_Mat1::load_ColInd() 
 {
     matrix->colInd = (int *)malloc(matrix->nZ * sizeof(int));
@@ -56,6 +65,8 @@ void Load_Mat1::load_ColInd()
     }
 }
 
+// Function: load_RowPtr
+// Loads the row csv file into an array
 void Load_Mat1::load_RowPtr()
 {
     matrix->rowPtr = (int *)malloc((matrix->rank + 1) * sizeof(int));
@@ -74,6 +85,8 @@ void Load_Mat1::load_RowPtr()
     }
 }
 
+// Function: load_Value
+// Loads the column csv file into an array
 void Load_Mat1::load_Value() 
 {
     matrix->value = (double *)malloc(matrix->nZ * sizeof(double));
@@ -122,6 +135,8 @@ sparse_Matrix* Load_Mat1::get_Sparse_Matrix()
     return matrix;
 }
 
+// Constructor
+// Creates a row-compressed matrix and loads .csv files into it
 Load_Mat1::Load_Mat1() {
     matrix = new sparse_Matrix();
     

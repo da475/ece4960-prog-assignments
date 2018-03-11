@@ -1,9 +1,12 @@
+
 /* 
- * File:   Matrix_Operations.cpp
  * Author: Vishisht, Deepak
- *
- * Created on March 6, 2018, 7:17 PM
- */
+ * Netids: vmt28 and da475
+ * Copyright @ 2018 Vishisht and Deepak. All rights reserved
+
+ * Created on March 4, 2018, 8:23 PM
+ * File: Matrix_Operations.cpp
+ * Desc: Code file implmenting functions for the class Matrix_Operations() */
 
 // include the class header file
 #include "Assignment2_Header.h"
@@ -246,7 +249,6 @@ int Matrix_Operations::rowScaleSparse(sparse_Matrix *matrix,  int rowScaledTo, i
 
 // Function to do product operation in full matrix format
 // Input arguments: row i, row j and scaling factor a (matrix is part of private member of the class)
-// TODO below code is wrong
 int Matrix_Operations::productAxFull(full_Matrix *A, full_Vector *x, full_Vector *b) 
 {
     
@@ -280,7 +282,6 @@ int Matrix_Operations::productAxFull(full_Matrix *A, full_Vector *x, full_Vector
 
 // Function to do row-scaling operation in full matrix format
 // Input arguments: row i, row j and scaling factor a (matrix is part of private member of the class)
-// TODO below code is wrong
 int Matrix_Operations::productAxSparse(sparse_Matrix *A, full_Vector *x, full_Vector *b) 
 {
     
