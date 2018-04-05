@@ -1,12 +1,18 @@
 /* 
- * File:   Jacobi.cpp
  * Author: Vishisht, Deepak
- *
- * Created on March 4, 2018, 1:23 PM
- */
+ * Netids: vmt28 and da475
+ * Copyright @ 2018 Vishisht and Deepak. All rights reserved
+
+ * Created on March 4, 2018, 8:23 PM
+ * File: Jacobi.cpp
+ * Desc: Code file implmenting functions for the class Jacobi() */
 
 #include "Assignment2_Header.h"
     
+// Function: Initializing_Matrix
+// Allocates array of a given rank and initializes it
+// Input: array and rank
+// Output: Initialized array
 void Jacobi::Initializing_Matrix() 
 {
     x->arr = (double *)malloc(b->rank * sizeof(double));
@@ -17,6 +23,11 @@ void Jacobi::Initializing_Matrix()
     }
 }
     
+// Function: Full_Matrix_Jacobi_Implementation
+// Allocates full matrix for a given rank and implements
+// Jacobi iterative solver on it
+// Input: rank, and matrix values
+// Output: Solution in vector x
 void Jacobi::Full_Matrix_Jacobi_Implementation() 
 {
     double *T = (double *)malloc(A->rank * A->rank * sizeof(double));
@@ -61,12 +72,18 @@ void Jacobi::Full_Matrix_Jacobi_Implementation()
     } while (converged > tolerance);
 }
     
+// Function: Row_Compressed_Jacobi_Implementation
+// Allocates row-compressed matrix for a given rank and implements
+// Jacobi iterative solver on it
+// Input: rank, and matrix values
+// Output: Solution in vector x
 void Jacobi::Row_Compressed_Jacobi_Implementation()
 {
     for (int i = 0; i < ASparse->rank; i++) {
         x->arr[i] = 0;
     }
 
+    // allocate memory
     double *TRowCompressed = (double *)malloc(ASparse->nZ * sizeof(double));
     for (int i = 0; i < ASparse->nZ; i++) {
         TRowCompressed[i] = ASparse->value[i];
@@ -117,6 +134,7 @@ void Jacobi::Row_Compressed_Jacobi_Implementation()
     } while (converged > tolerance);
 }
 
+// Constructor for Jacobi implementation on full matrix
 Jacobi::Jacobi(full_Matrix *A, full_Vector *b, full_Vector *x) 
 {
     this->A = A;
@@ -127,6 +145,7 @@ Jacobi::Jacobi(full_Matrix *A, full_Vector *b, full_Vector *x)
     Full_Matrix_Jacobi_Implementation();
 }
 
+// Constructor for Jacobi implementation on row-compressed matrix
 Jacobi::Jacobi(sparse_Matrix *ASparse, full_Vector *b, full_Vector *x) 
 {
     this->ASparse = ASparse;
@@ -137,6 +156,7 @@ Jacobi::Jacobi(sparse_Matrix *ASparse, full_Vector *b, full_Vector *x)
     Row_Compressed_Jacobi_Implementation();
 }
 
+// Destructor
 Jacobi::~Jacobi() 
 {
     if (this->A->arr) free(this->A->arr);

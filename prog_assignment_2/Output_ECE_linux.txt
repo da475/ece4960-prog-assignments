@@ -1,0 +1,19 @@
+
+
+Result for b = [1,0,0,0,....,0]
+The X produced by both Full Matrix Jacobi and Sparse Matrix Jacobi are same
+The residual norm in case of the result of full matrix jacobi is 1.1278e-09
+The residual norm in case of the result of sparse matrix jacobi is 1.45843e-09
+
+
+Result for b = [0,0,0,0,1,..,0]
+The X produced by both Full Matrix Jacobi and Sparse Matrix Jacobi are same
+The residual norm in case of the result of full matrix jacobi is 1.67544e-09
+The residual norm in case of the result of sparse matrix jacobi is 1.66605e-09
+
+
+Result for b = [1,1,1,1,....,1]
+The X produced by both Full Matrix Jacobi and Sparse Matrix Jacobi are same
+The residual norm in case of the result of full matrix jacobi is 7.9384e-12
+The residual norm in case of the result of sparse matrix jacobi is 7.9895e-12
+

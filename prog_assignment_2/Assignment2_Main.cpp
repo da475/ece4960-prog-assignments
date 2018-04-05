@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     full_Vector *bJacobiCheck1 = new full_Vector();
     full_Vector *bJacobiCheck2 = new full_Vector();
     
-    cout << "Tests done for b = [1,0,0,0,....,0]" << endl;
+    cout << endl << endl << "Result for b = [1,0,0,0,....,0]" << endl;
     // Implement full matrix and sparse matrix jacobi with b(all 0s)
     Jacobi *implementation_Jacobi1 = new Jacobi(AJacobi, bJacobi1, xJacobi1);
     Jacobi *implementation_Jacobi2 = new Jacobi(load->get_Sparse_Matrix(), bJacobi1, xJacobi2);
@@ -70,13 +70,10 @@ int main(int argc, char** argv) {
             Global_Functions::normalized_Residual_Norm_Full_Matrix(AJacobi,xJacobi1,bJacobi1,bJacobiCheck1) << endl;
     // Check the residual Norm for sparse Matrix Jacobi Result
     cout << "The residual norm in case of the result of sparse matrix jacobi is " << 
-            Global_Functions::normalized_Residual_Norm_Sparse_Matrix(load->get_Sparse_Matrix(),xJacobi1,bJacobi1,bJacobiCheck2) << endl;
+            Global_Functions::normalized_Residual_Norm_Sparse_Matrix(load->get_Sparse_Matrix(),xJacobi1,bJacobi1,bJacobiCheck2) << endl << endl << endl;
     
 
-    
-    
-    
-    cout << "Tests done for b = [0,0,0,0,1,..,0]" << endl;
+    cout << "Result for b = [0,0,0,0,1,..,0]" << endl;
     Jacobi *implementation_Jacobi3 = new Jacobi(AJacobi, bJacobi2, xJacobi1);
     Jacobi *implementation_Jacobi4 = new Jacobi(load->get_Sparse_Matrix(), bJacobi2, xJacobi2);
     
@@ -90,14 +87,10 @@ int main(int argc, char** argv) {
             Global_Functions::normalized_Residual_Norm_Full_Matrix(AJacobi,xJacobi1,bJacobi2,bJacobiCheck1) << endl;
     // Check the residual Norm for sparse Matrix Jacobi Result
     cout << "The residual norm in case of the result of sparse matrix jacobi is " << 
-            Global_Functions::normalized_Residual_Norm_Sparse_Matrix(load->get_Sparse_Matrix(),xJacobi1,bJacobi2,bJacobiCheck2) << endl;
+            Global_Functions::normalized_Residual_Norm_Sparse_Matrix(load->get_Sparse_Matrix(),xJacobi1,bJacobi2,bJacobiCheck2) << endl << endl << endl;
     
 
-    
-    
-    
-    
-    cout << "Tests done for b = [1,1,1,1,....,1]" << endl;
+    cout << "Result for b = [1,1,1,1,....,1]" << endl;
     Jacobi *implementation_Jacobi5 = new Jacobi(AJacobi, bJacobi3, xJacobi1);
     Jacobi *implementation_Jacobi6 = new Jacobi(load->get_Sparse_Matrix(), bJacobi3, xJacobi2);
     
@@ -111,7 +104,7 @@ int main(int argc, char** argv) {
             Global_Functions::normalized_Residual_Norm_Full_Matrix(AJacobi,xJacobi1,bJacobi3,bJacobiCheck1) << endl;
     // Check the residual Norm for sparse Matrix Jacobi Result
     cout << "The residual norm in case of the result of sparse matrix jacobi is " << 
-            Global_Functions::normalized_Residual_Norm_Sparse_Matrix(load->get_Sparse_Matrix(),xJacobi1,bJacobi3,bJacobiCheck2) << endl;
+            Global_Functions::normalized_Residual_Norm_Sparse_Matrix(load->get_Sparse_Matrix(),xJacobi1,bJacobi3,bJacobiCheck2) << endl << endl;
     
     return NO_ERROR;
 }
