@@ -14,6 +14,7 @@
 // Including the common header
 #include "assignment_3_Header.h"
 #include "full_Matrix_Solver.h"
+#include "power_Law_Parameter_Extraction.h"
 /*
  * 
  */
@@ -53,6 +54,18 @@ int main(int argc, char** argv) {
     Global_Functions::printMatrixFull(matrix);
     Global_Functions::printVectorFull(vector);
     Global_Functions::printVectorFull(answer);
+    
+    power_Law_Parameter_Extraction *a = new power_Law_Parameter_Extraction();
+    a->find_S_Measured();
+    double *answer11 = (double *)malloc(2 * sizeof(double));
+    for (int i = 0; i < 2; i++) {
+        answer11[i] = 0;
+    }
+    full_Vector *answer111 = new full_Vector();
+    if (Global_Functions::Create_Pointer_From_Vector(answer11, answer111, 2)) return ERROR;
+    a->find_S_Model(answer111);
+    Global_Functions::printVectorFull(answer111);
+    
 
     return 0;
 }
