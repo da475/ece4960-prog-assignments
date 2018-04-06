@@ -12,11 +12,13 @@
  */
 
 #include "full_Matrix_Solver.h"
-#include "assignment_3_Header.h"
+
+double tolerance = pow(10,-12);
 
 void full_Matrix_Solver::convert_To_Smaller_Matrix(full_Matrix *matrix, full_Matrix *newMatrix, int col) {
+    if (col >= rank) throw ERROR;
     newMatrix->rank = matrix->rank - 1;
-    newMatrix->arr = (double *)malloc(newMatrix->rank * newMatrix->rank * sizeof(double));
+    newMatrix->arr = (double *)calloc(newMatrix->rank * newMatrix->rank, sizeof(double));
     int k = 0, l = 0;
     for (int i = 1; i < matrix->rank; i++) {
         l = 0;
@@ -28,6 +30,14 @@ void full_Matrix_Solver::convert_To_Smaller_Matrix(full_Matrix *matrix, full_Mat
         }
         k++;
     }
+    #if EXCEPTION_HANDLING
+        for (int i = 0; i < newMatrix->rank; i++) {
+            for (int j = 0; j < newMatrix->rank; j++) {
+                if (isinf(matrix->arr[(i * newMatrix->rank) + j])) throw IS_INF_NINF;
+                if (isnan(matrix->arr[(i * newMatrix->rank) + j])) throw IS_NAN;
+            }
+        }
+    #endif  
 }
 
 double full_Matrix_Solver::determinant(full_Matrix *matrix) {
@@ -45,12 +55,14 @@ double full_Matrix_Solver::determinant(full_Matrix *matrix) {
         }     
         sign = !sign;
     }
+    if (isinf(value)) throw IS_INF_NINF;
+    if (isnan(value)) throw IS_NAN;
     return value;
 }
 
-int full_Matrix_Solver::row_Permeutation(int rowA, int rowB) {
-    if ((rowA >= rank) || (rowB >= rank)) return ERROR;
-    if (rank != vector->rank) return UNMATCHED_RANK;
+void full_Matrix_Solver::row_Permeutation(int rowA, int rowB) {
+    if ((rowA >= rank) || (rowB >= rank)) throw ERROR;
+    if (matrix->rank != vector->rank) throw UNMATCHED_RANK;
     double temp = 0;
     for (int i = 0; i < rank; i++) {
         temp = matrix->arr[(rowA * rank) + i];
@@ -60,39 +72,56 @@ int full_Matrix_Solver::row_Permeutation(int rowA, int rowB) {
     temp = vector->arr[rowA];
     vector->arr[rowA] = vector->arr[rowB];
     vector->arr[rowB] = temp;
-    return NO_ERROR;
+    
+    #if EXCEPTION_HANDLING
+        for (int i = 0; i < rank; i++) {
+            if (isinf(matrix->arr[(rowA * rank) + i])) throw IS_INF_NINF;
+            if (isnan(matrix->arr[(rowA * rank) + i])) throw IS_NAN;
+            if (isinf(matrix->arr[(rowB * rank) + i])) throw IS_INF_NINF;
+            if (isnan(matrix->arr[(rowB * rank) + i])) throw IS_NAN;
+        }
+        if (isinf(vector->arr[rowA])) throw IS_INF_NINF;
+        if (isnan(vector->arr[rowB])) throw IS_NAN;
+    #endif  
 }
 
-int full_Matrix_Solver::row_Scaling(int rowA, int rowB, double scalingConst) {
-    if ((rowA >= rank) || (rowB >= rank)) return ERROR;
-    if (rank != vector->rank) return UNMATCHED_RANK;
-    for (int i = 0; i < rank; i++) {
-        matrix->arr[(rowB * rank) + i] += scalingConst * matrix->arr[(rowA * rank) + i];
-    }
+void full_Matrix_Solver::row_Scaling(int rowA, int rowB, double scalingConst) {
+    if ((rowA >= rank) || (rowB >= rank)) throw ERROR;
+    if (matrix->rank != vector->rank) throw UNMATCHED_RANK;
+    for (int i = 0; i < rank; i++) matrix->arr[(rowB * rank) + i] += scalingConst * matrix->arr[(rowA * rank) + i];
     vector->arr[rowB] += scalingConst * vector->arr[rowA];
-    return NO_ERROR;
+    
+    #if EXCEPTION_HANDLING
+        for (int i = 0; i < rank; i++) {
+            if (isinf(matrix->arr[(rowA * rank) + i])) throw IS_INF_NINF;
+            if (isnan(matrix->arr[(rowA * rank) + i])) throw IS_NAN;
+            if (isinf(matrix->arr[(rowB * rank) + i])) throw IS_INF_NINF;
+            if (isnan(matrix->arr[(rowB * rank) + i])) throw IS_NAN;
+        }
+        if (isinf(vector->arr[rowA])) throw IS_INF_NINF;
+        if (isnan(vector->arr[rowB])) throw IS_NAN;
+    #endif  
 }
 
-int full_Matrix_Solver::partial_Row_Pivoting(element *ele) {
-    if ((ele->row >= rank) || (ele->col >= rank)) return ERROR;
-    if (rank != vector->rank) return UNMATCHED_RANK;
+void full_Matrix_Solver::partial_Row_Pivoting(element *ele) {
+    if ((ele->row >= rank) || (ele->col >= rank)) throw ERROR;
+    if (matrix->rank != vector->rank) throw UNMATCHED_RANK;
     for (int i = ele->row + 1; i < rank; i++) {
         if (matrix->arr[(i * rank) + ele->col] != 0) {
-            if (full_Matrix_Solver::row_Scaling(ele->row, i, -(matrix->arr[(i * rank) + ele->col]/ele->value))) return ERROR;
+            full_Matrix_Solver::row_Scaling(ele->row, i, -(matrix->arr[(i * rank) + ele->col]/ele->value));
         }
     }
-    return NO_ERROR;
 }
 
-int full_Matrix_Solver::l_U_Decomposition() {
-    if (rank != vector->rank) return UNMATCHED_RANK;
-    
+void full_Matrix_Solver::l_U_Decomposition() {
+    if (matrix->rank != vector->rank) throw UNMATCHED_RANK;
+
     for (int i = 0; i < rank; i++) {
         if (matrix->arr[(i * rank) + i] == 0) {
             
             for (int j = 1; j < rank; j++) {
                 if (matrix->arr[(j * rank) + i] != 0) {
-                    if (full_Matrix_Solver::row_Permeutation(i, j)) return ERROR;
+                    full_Matrix_Solver::row_Permeutation(i, j);
                     break;
                 }
             }
@@ -104,14 +133,26 @@ int full_Matrix_Solver::l_U_Decomposition() {
         ele->row = i;
         ele->value = matrix->arr[(i * rank) + i];
         
-        if (full_Matrix_Solver::partial_Row_Pivoting(ele)) return ERROR;
+        full_Matrix_Solver::partial_Row_Pivoting(ele);
         double after = full_Matrix_Solver::determinant(this->matrix);
-        if (before != after) return ERROR;
+        if (abs(before - after) > tolerance) throw ERROR;
     } 
-    return NO_ERROR;
+    
+    #if EXCEPTION_HANDLING
+        for (int i = 0; i < rank; i++) {
+            for (int j = 0; j < rank; j++) {
+                if (isinf(matrix->arr[(i * rank) + j])) throw IS_INF_NINF;
+                if (isnan(matrix->arr[(i * rank) + j])) throw IS_NAN;
+            }
+        }
+    #endif  
+    
 }
 
-int full_Matrix_Solver::back_Substitution(full_Vector *answer) {
+void full_Matrix_Solver::back_Substitution(full_Vector *answer) {
+    if (matrix->rank != answer->rank) throw UNMATCHED_RANK;
+    if (answer->rank != vector->rank) throw UNMATCHED_RANK;
+    
     double sum = 0;
     for (int i = rank - 1; i >= 0; i--) {
         sum = vector->arr[i];
@@ -120,7 +161,13 @@ int full_Matrix_Solver::back_Substitution(full_Vector *answer) {
         }
         answer->arr[i] = sum/matrix->arr[(i * rank) + i];
     }
-    return NO_ERROR;
+    
+    #if EXCEPTION_HANDLING
+        for (int i = 0; i < rank; i++) {
+            if (isinf(answer->arr[i])) throw IS_INF_NINF;
+            if (isnan(answer->arr[i])) throw IS_NAN;
+        }
+    #endif  
 }
 
 full_Matrix_Solver::full_Matrix_Solver(full_Matrix *matrix, full_Vector *vector) {

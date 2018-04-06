@@ -17,18 +17,16 @@
 #ifndef POWER_LAW_PARAMETER_EXTRACTION_H
 #define POWER_LAW_PARAMETER_EXTRACTION_H
 
-using namespace std;
-
 class power_Law_Parameter_Extraction {
 public:
     power_Law_Parameter_Extraction();
-    int find_S_Measured();
-    int find_S_Model(full_Vector *answer);
+    void find_S_Measured();
+    void find_S_Model(full_Vector *answer);
     virtual ~power_Law_Parameter_Extraction();
 private:
     double X[10];
     double S_Measured[10];
-
+    int rank;
 };
 
 #endif /* POWER_LAW_PARAMETER_EXTRACTION_H */
