@@ -36,6 +36,7 @@ using namespace std;
 
 // Global Variables
 extern double tolerance;
+extern int sizeOfOutputNMOS;
 
 typedef struct {
     double *arr;

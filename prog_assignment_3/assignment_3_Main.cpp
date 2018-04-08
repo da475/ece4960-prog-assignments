@@ -15,6 +15,9 @@
 #include "assignment_3_Header.h"
 #include "full_Matrix_Solver.h"
 #include "power_Law_Parameter_Extraction.h"
+#include "load_OutputNMOS.h"
+#include "EKV_Model.h"
+
 /*
  * 
  */
@@ -67,23 +70,29 @@ int main(int argc, char** argv) {
         Global_Functions::create_Struct_From_Vector(answerPointerExtractor, answerExtractor, 2);
         extractor->find_S_Model(answerExtractor);
         Global_Functions::print_Vector_Full(answerExtractor);
+        
+        
+        
+        
+        EKV_Model *QN = new EKV_Model();
+        
 
     }
     catch (int check){
         if (check == ERROR) {
-            cout << "Error Observed" << endl;
+            cerr << "Error Observed" << endl;
             return ERROR;
         }
         if (check == UNMATCHED_RANK) {
-            cout << "Unmatched Rank Error Observed" << endl;
+            cerr << "Unmatched Rank Error Observed" << endl;
             return UNMATCHED_RANK;
         }
         if (check == IS_INF_NINF) {
-            cout << "NINF/INF Error Observed" << endl;
+            cerr << "NINF/INF Error Observed" << endl;
             return IS_INF_NINF;
         }
         if (check == IS_NAN) {
-            cout << "NAN Error Observed" << endl;
+            cerr << "NAN Error Observed" << endl;
             return IS_NAN;
         }
     }
