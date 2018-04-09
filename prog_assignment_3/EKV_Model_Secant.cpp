@@ -36,7 +36,6 @@ double EKV_Model_Secant::calculate_V(double K, double Vth, double Is) {
     return V;
 }
 
-
 double EKV_Model_Secant::calculate_V_K(double K_Current, double Vth_Current, double Is_Current, 
         double K_Previous, double Vth_Previous, double Is_Previous) {
     double V_2 = EKV_Model_Secant::calculate_V(K_Current, Vth_Current, Is_Current);
@@ -81,7 +80,8 @@ void EKV_Model_Secant::create_Del_V() {
             this->Parameters1[0], this->Parameters1[1], this->Parameters1[2]);
 }
 
-
+// Main function to find the parameters using the
+// above helper functions
 void EKV_Model_Secant::find_Parameters() { 
     
     full_Matrix *HessianStruct = new full_Matrix();
@@ -133,7 +133,7 @@ void EKV_Model_Secant::find_Parameters() {
     cout << "V: " <<  V << endl;
 }
 
-
+// Constructor
 EKV_Model_Secant::EKV_Model_Secant(double K1, double Vth1, double Is1) {
     this->VT = 0.026;
     this->rank = 3;
@@ -165,6 +165,16 @@ EKV_Model_Secant::EKV_Model_Secant(double K1, double Vth1, double Is1) {
     EKV_Model_Secant::find_Parameters();
 }
 
+// Destructor
 EKV_Model_Secant::~EKV_Model_Secant() {
+    if (this->Vgs != NULL) free(this->Vgs);
+    if (this->Vds != NULL) free(this->Vds);
+    if (this->Ids != NULL) free(this->Ids);
+    if (this->Parameters0 != NULL) free(this->Parameters0);
+    if (this->Parameters1 != NULL) free(this->Parameters1);
+    if (this->Parameters2 != NULL) free(this->Parameters2);
+    if (this->DelParameters != NULL) free(this->DelParameters);
+    if (this->Hessian != NULL) free(this->Hessian);
+    if (this->DelV != NULL) free(this->DelV);
 }
 

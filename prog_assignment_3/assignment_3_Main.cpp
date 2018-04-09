@@ -24,8 +24,14 @@
  */
 int main(int argc, char** argv) {
 
+    // All operations are performed within a try block
+    // Internal functions are checking for invalid scenarios
+    // and throwing exceptions which are caught by the catch
+    // block below the try block
     try {
-        /*
+
+
+        // Task 1: Direct full matrix solver with reasonable pivoting checks        
         double matrix2D[3][3] = {{9,3,1},{3,2,8},{0.5,6,2.25}};
         double *matrixPointer = (double *)calloc(3 * 3, sizeof(double));
         for (int i = 0; i < 3; i++) {
@@ -47,6 +53,7 @@ int main(int argc, char** argv) {
         Global_Functions::print_Matrix_Full(matrix);
         Global_Functions::print_Vector_Full(vector);
 
+        // Perform L-U Decomposition
         full_Matrix_Solver *solver = new full_Matrix_Solver(matrix, vector);
         solver->l_U_Decomposition();
         double *answerPointerMatrix = (double *)calloc(3, sizeof(double));
@@ -58,13 +65,7 @@ int main(int argc, char** argv) {
         Global_Functions::print_Vector_Full(vector);
         Global_Functions::print_Vector_Full(answerMatrix);
 
-
-
-
-
-
-
-
+        // Parameter extraction
         power_Law_Parameter_Extraction *extractor = new power_Law_Parameter_Extraction();
         extractor->find_S_Measured();
         double *answerPointerExtractor = (double *)calloc(2, sizeof(double));
@@ -73,9 +74,7 @@ int main(int argc, char** argv) {
         extractor->find_S_Model(answerExtractor);
         Global_Functions::print_Vector_Full(answerExtractor);
         
-        
-        */
-        
+        // Secand method        
         double IsInitial[8] = {3e-8, 1e-7, 3e-7, 1e-6, 3e-6, 1e-5, 3e-5};
         double KInitial[5] = {0.5, 0.6, 0.7, 0.8, 0.9};
         double VthInitial[13] = {0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0};
