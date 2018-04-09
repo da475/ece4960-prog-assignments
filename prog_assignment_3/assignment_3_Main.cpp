@@ -17,6 +17,7 @@
 #include "power_Law_Parameter_Extraction.h"
 #include "load_OutputNMOS.h"
 #include "EKV_Model.h"
+#include "EKV_Model_Secant.h"
 
 /*
  * 
@@ -24,6 +25,7 @@
 int main(int argc, char** argv) {
 
     try {
+        /*
         double matrix2D[3][3] = {{9,3,1},{3,2,8},{0.5,6,2.25}};
         double *matrixPointer = (double *)calloc(3 * 3, sizeof(double));
         for (int i = 0; i < 3; i++) {
@@ -72,10 +74,24 @@ int main(int argc, char** argv) {
         Global_Functions::print_Vector_Full(answerExtractor);
         
         
+        */
         
+        double IsInitial[8] = {3e-8, 1e-7, 3e-7, 1e-6, 3e-6, 1e-5, 3e-5};
+        double KInitial[5] = {0.5, 0.6, 0.7, 0.8, 0.9};
+        double VthInitial[13] = {0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0};
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 5; j++) {
+                for (int k = 0; k < 13; k++) {
+                    cout << "Is = " << IsInitial[i] << endl;
+                    cout << "K = " << KInitial[j] << endl;
+                    cout << "Vth = " << VthInitial[k] << endl;
+                    EKV_Model *QN = new EKV_Model(KInitial[i], VthInitial[j], IsInitial[k]);
+                    EKV_Model_Secant *Secant = new EKV_Model_Secant(KInitial[i], VthInitial[j], IsInitial[k]);
+                }
+            }
+        }
         
-        EKV_Model *QN = new EKV_Model();
-        
+        EKV_Model_Secant *Secant = new EKV_Model_Secant(0.5, 0.8, 1e-8);
 
     }
     catch (int check){

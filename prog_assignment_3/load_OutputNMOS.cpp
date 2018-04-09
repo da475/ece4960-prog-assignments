@@ -13,7 +13,7 @@
 
 #include "load_OutputNMOS.h"
 
-int sizeOfOutputNMOS = 1009;
+int sizeOfOutputNMOS = 1010;
 
 load_OutputNMOS::load_OutputNMOS() {
     ifstream myReadFile;
@@ -26,7 +26,7 @@ load_OutputNMOS::load_OutputNMOS() {
     if (myReadFile.is_open()) {
         while (!myReadFile.eof()) {
             myReadFile >> temp;
-            if (counter > 0 && counter < (sizeOfOutputNMOS + 2)) {
+            if (counter > 0 && counter < (sizeOfOutputNMOS + 1)) {
                 if (counter1 == 0) Vgs[counter - 1] = stof(temp);
                 else if (counter1 == 1) Vds[counter - 1] = stof(temp);
                 else if (counter1 == 2) Ids[counter - 1] = stof(temp);
@@ -40,22 +40,19 @@ load_OutputNMOS::load_OutputNMOS() {
             }
        }
    }
-    cout << Ids[0] << endl;
    myReadFile.close();
 }
 
-void load_OutputNMOS::getVgsPointer(double *Vgs) {
-    Vgs = this->Vgs;
+void load_OutputNMOS::getVgsPointer(double **Vgs) {
+    *Vgs = this->Vgs;
 }
 
-void load_OutputNMOS::getVdsPointer(double *Vds) {
-    Vds = this->Vds;
+void load_OutputNMOS::getVdsPointer(double **Vds) {
+    *Vds = this->Vds;
 }
 
-void load_OutputNMOS::getIdsPointer(double *Ids) {
-    cout << this->Ids[0] << endl;
-    Ids = this->Ids;
-    cout << Ids[0] << endl;
+void load_OutputNMOS::getIdsPointer(double **Ids) {
+    *Ids = this->Ids;
 }
 
 load_OutputNMOS::~load_OutputNMOS() {

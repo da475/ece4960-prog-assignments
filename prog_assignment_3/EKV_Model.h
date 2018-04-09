@@ -24,12 +24,13 @@ public:
     virtual ~EKV_Model();
 private:
     double VT;
-    double K;
-    double Vth;
-    double Is;
-    double h;
     int rank;
+    double pert;
+    double pertK;
+    double pertVth;
+    double pertIs;
     
+    double *DelParameters;
     double *Parameters;
     double *Hessian;
     double *DelV;
@@ -55,6 +56,8 @@ private:
     double calculate_V_Is_K(double K, double Vth, double Is);
     double calculate_V_Is_Vth(double K, double Vth, double Is);
     double calculate_V_Is_Is(double K, double Vth, double Is);
+    
+    double lineSearch(double *parameters, double min, double max, double *tempParameters);
     
     void create_Hesian();
     void create_Del_V();

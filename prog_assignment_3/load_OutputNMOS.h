@@ -19,9 +19,9 @@
 class load_OutputNMOS {
 public:
     load_OutputNMOS();
-    void getVgsPointer(double *Vgs);
-    void getVdsPointer(double *Vds);
-    void getIdsPointer(double *Ids);
+    void getVgsPointer(double **Vgs);
+    void getVdsPointer(double **Vds);
+    void getIdsPointer(double **Ids);
     virtual ~load_OutputNMOS();
 private:
     double *Vgs;

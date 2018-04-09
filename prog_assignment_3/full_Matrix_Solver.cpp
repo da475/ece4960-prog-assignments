@@ -55,6 +55,7 @@ double full_Matrix_Solver::determinant(full_Matrix *matrix) {
         }     
         sign = !sign;
     }
+    //cout << value << endl;
     if (isinf(value)) throw IS_INF_NINF;
     if (isnan(value)) throw IS_NAN;
     return value;
@@ -135,7 +136,8 @@ void full_Matrix_Solver::l_U_Decomposition() {
         
         full_Matrix_Solver::partial_Row_Pivoting(ele);
         double after = full_Matrix_Solver::determinant(this->matrix);
-        if (abs(before - after) > tolerance) throw ERROR;
+        if (((abs(after - before))/abs(after)) > tolerance) throw ERROR;
+        
     } 
     
     #if EXCEPTION_HANDLING

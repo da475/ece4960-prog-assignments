@@ -30,7 +30,7 @@
 #define UNMATCHED_RANK 2
 #define IS_INF_NINF 3
 #define IS_NAN 4
-#define EXCEPTION_HANDLING true    // Macro to enable exception handling
+#define EXCEPTION_HANDLING false    // Macro to enable exception handling
 
 using namespace std;
 
