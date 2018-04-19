@@ -54,6 +54,9 @@ typedef struct {
     double value;
 }element;
 
+
+// This is a globally defined class whose functions are
+// made public and can be used by any other code file
 class Global_Functions
 {
 private:

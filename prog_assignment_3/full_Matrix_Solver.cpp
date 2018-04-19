@@ -15,6 +15,8 @@
 
 double tolerance = pow(10,-12);
 
+// Function to take a square matrix of rank N and return matrix of rank N-1
+// This is helper function used to calculate the determinant
 void full_Matrix_Solver::convert_To_Smaller_Matrix(full_Matrix *matrix, full_Matrix *newMatrix, int col) {
     if (col >= rank) throw ERROR;
     newMatrix->rank = matrix->rank - 1;
@@ -40,6 +42,7 @@ void full_Matrix_Solver::convert_To_Smaller_Matrix(full_Matrix *matrix, full_Mat
     #endif  
 }
 
+// Function to calculate the determinant through recursion
 double full_Matrix_Solver::determinant(full_Matrix *matrix) {
     if (matrix->rank == 2) return (matrix->arr[0] * matrix->arr[3]) - (matrix->arr[1] * matrix->arr[2]);
     bool sign = true;
@@ -48,20 +51,21 @@ double full_Matrix_Solver::determinant(full_Matrix *matrix) {
         full_Matrix *matrixTemp = new full_Matrix();
         full_Matrix_Solver::convert_To_Smaller_Matrix(matrix, matrixTemp, i);
         if (sign) {
-            value += matrix->arr[i] * determinant(matrixTemp);
+            value += matrix->arr[i] * determinant(matrixTemp);      // recursive call to smaller matrix
         }
         else {
-            value -= matrix->arr[i] * determinant(matrixTemp);
+            value -= matrix->arr[i] * determinant(matrixTemp);      // recursive call to smaller matrix
         }     
-        sign = !sign;
+        sign = !sign;       // keep toggling the sign at every iteration
     }
-    //cout << value << endl;
     if (isinf(value)) throw IS_INF_NINF;
     if (isnan(value)) throw IS_NAN;
     return value;
 }
 
-void full_Matrix_Solver::row_Permeutation(int rowA, int rowB) {
+// Function to perform row-permutation between the two
+// input rows rowA and rowB, also checks for exception handling
+void full_Matrix_Solver::row_Permutation(int rowA, int rowB) {
     if ((rowA >= rank) || (rowB >= rank)) throw ERROR;
     if (matrix->rank != vector->rank) throw UNMATCHED_RANK;
     double temp = 0;
@@ -86,6 +90,8 @@ void full_Matrix_Solver::row_Permeutation(int rowA, int rowB) {
     #endif  
 }
 
+// Function to perform row scaling by taking the two rows
+// and the scaling coefficient as the inputs
 void full_Matrix_Solver::row_Scaling(int rowA, int rowB, double scalingConst) {
     if ((rowA >= rank) || (rowB >= rank)) throw ERROR;
     if (matrix->rank != vector->rank) throw UNMATCHED_RANK;
@@ -104,6 +110,7 @@ void full_Matrix_Solver::row_Scaling(int rowA, int rowB, double scalingConst) {
     #endif  
 }
 
+// Function to perform partial row pivoting
 void full_Matrix_Solver::partial_Row_Pivoting(element *ele) {
     if ((ele->row >= rank) || (ele->col >= rank)) throw ERROR;
     if (matrix->rank != vector->rank) throw UNMATCHED_RANK;
@@ -114,19 +121,22 @@ void full_Matrix_Solver::partial_Row_Pivoting(element *ele) {
     }
 }
 
+// Function to perform L-U Decomposition
 void full_Matrix_Solver::l_U_Decomposition() {
     if (matrix->rank != vector->rank) throw UNMATCHED_RANK;
 
+    // Iterate over the diagonal elements
     for (int i = 0; i < rank; i++) {
+        // if the diagonal element is zero, do row permutation with other rows
         if (matrix->arr[(i * rank) + i] == 0) {
-            
             for (int j = 1; j < rank; j++) {
                 if (matrix->arr[(j * rank) + i] != 0) {
-                    full_Matrix_Solver::row_Permeutation(i, j);
+                    full_Matrix_Solver::row_Permutation(i, j);
                     break;
                 }
             }
         }
+        // calculate the determinant before performing partial pivoting
         double before = full_Matrix_Solver::determinant(this->matrix);
 
         element *ele = new element();
@@ -135,7 +145,11 @@ void full_Matrix_Solver::l_U_Decomposition() {
         ele->value = matrix->arr[(i * rank) + i];
         
         full_Matrix_Solver::partial_Row_Pivoting(ele);
+
+        // calculate the determinant after performing partial pivoting
         double after = full_Matrix_Solver::determinant(this->matrix);
+
+        // check for tolerance limit and return error if crossed
         if (((abs(after - before))/abs(after)) > tolerance) throw ERROR;
         
     } 
@@ -151,6 +165,8 @@ void full_Matrix_Solver::l_U_Decomposition() {
     
 }
 
+// Function to perform Back-Substitution, populates the outputs
+// in the input vector using the class members as inputs
 void full_Matrix_Solver::back_Substitution(full_Vector *answer) {
     if (matrix->rank != answer->rank) throw UNMATCHED_RANK;
     if (answer->rank != vector->rank) throw UNMATCHED_RANK;
@@ -172,12 +188,14 @@ void full_Matrix_Solver::back_Substitution(full_Vector *answer) {
     #endif  
 }
 
+// Constructor
 full_Matrix_Solver::full_Matrix_Solver(full_Matrix *matrix, full_Vector *vector) {
     this->matrix = matrix;
     this->vector = vector;
     this->rank = matrix->rank;
 }
 
+// Destructor
 full_Matrix_Solver::~full_Matrix_Solver() {
 }
 

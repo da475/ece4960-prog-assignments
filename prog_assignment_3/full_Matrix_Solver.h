@@ -16,6 +16,9 @@
 #ifndef FULL_MATRIX_SOLVER_H
 #define FULL_MATRIX_SOLVER_H
 
+
+// Class to implement full matrix solver
+// using L-U decomposition and back-substitution
 class full_Matrix_Solver {
 public:
     full_Matrix_Solver(full_Matrix *matrix, full_Vector *vector);
@@ -26,7 +29,7 @@ private:
     full_Matrix *matrix;
     full_Vector *vector;
     int rank;
-    void row_Permeutation(int rowA, int rowB);
+    void row_Permutation(int rowA, int rowB);
     void row_Scaling(int rowA, int rowB, double scallingConst);
     void partial_Row_Pivoting(element *ele);
     

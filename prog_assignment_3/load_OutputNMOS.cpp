@@ -15,6 +15,8 @@
 
 int sizeOfOutputNMOS = 1010;
 
+// Constructor to load outputNMOS and read the values
+// into the three vectors
 load_OutputNMOS::load_OutputNMOS() {
     ifstream myReadFile;
     myReadFile.open("outputNMOS.txt");
@@ -43,6 +45,7 @@ load_OutputNMOS::load_OutputNMOS() {
    myReadFile.close();
 }
 
+// Three helper functions to return the vectors
 void load_OutputNMOS::getVgsPointer(double **Vgs) {
     *Vgs = this->Vgs;
 }
@@ -55,5 +58,9 @@ void load_OutputNMOS::getIdsPointer(double **Ids) {
     *Ids = this->Ids;
 }
 
+// Destructor
 load_OutputNMOS::~load_OutputNMOS() {
+    if (this->Vgs != NULL) free(this->Vgs);
+    if (this->Vds != NULL) free(this->Vds);
+    if (this->Ids != NULL) free(this->Ids);
 }

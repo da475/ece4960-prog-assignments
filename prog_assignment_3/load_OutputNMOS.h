@@ -16,6 +16,7 @@
 #ifndef LOAD_OUTPUTNMOS_H
 #define LOAD_OUTPUTNMOS_H
 
+// Class to load and retrieve the text file outputNMOS
 class load_OutputNMOS {
 public:
     load_OutputNMOS();

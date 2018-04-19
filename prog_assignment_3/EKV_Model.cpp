@@ -13,6 +13,8 @@
 
 #include "EKV_Model.h"
 
+// Below is the list of helper functions to calculate various 
+// parameters like Id, V, Vk etc
 double EKV_Model::calculate_Id_Model(double Vgs, double Vds, double K, double Vth, double Is) {
     return (Is * pow(log(1.0 + exp(K * (Vgs - Vth) / (2.0 * VT))), 2.0) - 
             Is * pow(log(1.0 + exp((K * (Vgs - Vth) - Vds) / (2.0 * VT))), 2.0));
@@ -46,8 +48,6 @@ double EKV_Model::calculate_V_Is(double K, double Vth, double Is) {
             EKV_Model::calculate_V(K, Vth, Is))
             /(Is * pert);
 }
-
-
 
 double EKV_Model::calculate_V_K_K(double K, double Vth, double Is) {
     return (EKV_Model::calculate_V(K + (2 * K * pert), Vth, Is) - 
@@ -105,65 +105,7 @@ double EKV_Model::calculate_V_Is_Is(double K, double Vth, double Is) {
             /(Is * pert) * (Is * pert);
 }
 
-
-
-
-//double EKV_Model::calculate_V_K_K(double K, double Vth, double Is) {
-//    return (EKV_Model::calculate_V_K(K + (K * pert), Vth, Is) - 
-//            EKV_Model::calculate_V_K(K, Vth, Is))
-//            /(K * pert);
-//}
-//
-//double EKV_Model::calculate_V_K_Vth(double K, double Vth, double Is) {
-//    return (EKV_Model::calculate_V_Vth(K + (K * pert), Vth, Is) - 
-//            EKV_Model::calculate_V_Vth(K, Vth, Is))
-//            /(K * pert);
-//}
-//
-//double EKV_Model::calculate_V_K_Is(double K, double Vth, double Is) {
-//    return (EKV_Model::calculate_V_Is(K + (K * pert), Vth, Is) - 
-//            EKV_Model::calculate_V_Is(K, Vth, Is))
-//            /(K * pert);
-//}
-//
-//
-//double EKV_Model::calculate_V_Vth_K(double K, double Vth, double Is) {
-//    return (EKV_Model::calculate_V_K(K, Vth + (Vth * pert), Is) - 
-//            EKV_Model::calculate_V_K(K, Vth, Is))
-//            /(Vth * pert);
-//}
-//
-//double EKV_Model::calculate_V_Vth_Vth(double K, double Vth, double Is) {
-//    return (EKV_Model::calculate_V_Vth(K, Vth + (Vth * pert), Is) - 
-//            EKV_Model::calculate_V_Vth(K, Vth, Is))
-//            /(Vth * pert);
-//}
-//
-//double EKV_Model::calculate_V_Vth_Is(double K, double Vth, double Is) {
-//    return (EKV_Model::calculate_V_Is(K, Vth + (Vth * pert), Is) - 
-//            EKV_Model::calculate_V_Is(K, Vth, Is))
-//            /(Vth * pert);
-//}
-//
-//
-//double EKV_Model::calculate_V_Is_K(double K, double Vth, double Is) {
-//    return (EKV_Model::calculate_V_K(K, Vth, Is + (Is * pert)) - 
-//            EKV_Model::calculate_V_K(K, Vth, Is))
-//            /(Is * pert);
-//}
-//
-//double EKV_Model::calculate_V_Is_Vth(double K, double Vth, double Is) {
-//    return (EKV_Model::calculate_V_Vth(K, Vth, Is + (Is * pert)) - 
-//            EKV_Model::calculate_V_Vth(K, Vth, Is))
-//            /(Is * pert);
-//}
-//
-//double EKV_Model::calculate_V_Is_Is(double K, double Vth, double Is) {
-//    return (EKV_Model::calculate_V_Is(K, Vth, Is + (Is * pert)) - 
-//            EKV_Model::calculate_V_Is(K, Vth, Is))
-//            /(Is * pert);
-//}
-
+// Create the Hessian matrix
 void EKV_Model::create_Hesian() {
     this->Hessian[0] = EKV_Model::calculate_V_K_K(this->Parameters[0], this->Parameters[1], this->Parameters[2]);
     this->Hessian[1] = EKV_Model::calculate_V_Vth_K(this->Parameters[0], this->Parameters[1], this->Parameters[2]);
@@ -213,23 +155,24 @@ double EKV_Model::lineSearch(double *parameters, double min, double max, double 
         ((tempParameters[2] * tempParameters[2]) / (tempParametersMin[2] * tempParametersMin[2]));
     
     if ((abs(minValue - midValue) < 1e-7) && (abs(maxValue - midValue) < 1e-7)) {
-        //cout << "mid" << endl;
         return mid;
     }
     else if ((midValue < minValue) && (midValue < maxValue)) {
-        //cout << "midGreat" << endl;
         return mid;
     }
     else if (minValue < midValue) {
-        //cout << "min" << endl;
         return EKV_Model::lineSearch(parameters, min, mid, tempParameters);
     }
         
     else if (maxValue < midValue) {
-        //cout << "max" << endl;
         return EKV_Model::lineSearch(parameters, mid, max, tempParameters);
     }
-    //cout << "none" << endl;
+
+    free(tempParametersMid);
+    free(tempParametersMax);
+    free(tempParametersMin);
+
+    return 0;
 }
 
 void EKV_Model::find_Parameters() { 
@@ -281,8 +224,7 @@ void EKV_Model::find_Parameters() {
     cout << "V: " <<  V << endl;
 }
 
-
-
+// Constructor
 EKV_Model::EKV_Model(double K, double Vth, double Is) {
     this->VT = 26e-3;
     this->rank = 3;
@@ -309,5 +251,15 @@ EKV_Model::EKV_Model(double K, double Vth, double Is) {
     EKV_Model::find_Parameters();
 }
 
+// Destructor
 EKV_Model::~EKV_Model() {
+    if (this->Vgs != NULL) free(this->Vgs);
+    if (this->Vds != NULL) free(this->Vds);
+    if (this->Ids != NULL) free(this->Ids);
+    if (this->Parameters != NULL) free(this->Parameters);
+    if (this->DelParameters != NULL) free(this->DelParameters);
+    if (this->Hessian != NULL) free(this->Hessian);
+    if (this->DelV != NULL) free(this->DelV);
 }
+
+
