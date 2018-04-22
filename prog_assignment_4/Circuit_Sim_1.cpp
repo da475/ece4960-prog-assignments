@@ -59,12 +59,12 @@ Circuit_Sim_1::Circuit_Sim_1(double Step) {
     Global_Functions::create_Time_Values(start, stop, step, rank, rk34WoAdaptValues, time, delT);
     
     
-    ODE_Solvers *solver = new ODE_Solvers();
+    ODE_Solvers *solver = new ODE_Solvers(initialValue, time, delT, fx);
     
-    solver->forward_Euler(initialValue, forwardEulerValues, time, delT, fx);
-    solver->rk34_Without_Adapt(initialValue, rk34WoAdaptValues, time, delT, fx);
+    solver->forward_Euler(forwardEulerValues);
+    solver->rk34_Without_Adapt(rk34WoAdaptValues);
     
-    Global_Functions::print_Comparison(forwardEulerValues, rk34WoAdaptValues);
+    Global_Functions::print_Comparison(time, forwardEulerValues, rk34WoAdaptValues);
 }
 
 

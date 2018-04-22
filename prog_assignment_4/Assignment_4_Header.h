@@ -32,7 +32,8 @@
 using namespace std;
 
 // Global Variables
-extern double tolerance;
+extern double rel_tolerance;
+extern double abs_tolerance;
 
 typedef struct {
     double *arr;
@@ -62,34 +63,16 @@ class Global_Functions
 private:
 public:
     
-    static double error(double trueValue, double calculated) {
-        return 100 * (trueValue - calculated)/trueValue;
+    static double calculate_Norm(arrayMatCol *value) {
+        double sum;
+        for (int i = 0; i < value->rank; i++)
+            sum += value->col[i] * value->col[i];
+        
+        return sqrt(sum);
     }
     
-    static void print_Comparison(arrayMat *forEulerValues, arrayMat *rk34WoAdaptValues, arrayMat *trueValues = NULL) {
-        if (forEulerValues->dim != rk34WoAdaptValues->dim || (trueValues != NULL && (rk34WoAdaptValues->dim != trueValues->dim))) throw UNMATCHED_DIM;
-        
-        int dim = forEulerValues->dim;
-        
-        if (trueValues != NULL) {
-            cout << "True Values\tForward Euler Values\tForward Euler Error\tRK34 With Time Adapt Values\tRK34 With Time Adapt Error" << endl;
-            for (int i = 0; i < dim; i++)
-                cout << trueValues->arr[i]->col[0] << "\t\t" << 
-                        forEulerValues->arr[i]->col[0] << "\t\t\t" << 
-                        error(trueValues->arr[i]->col[0], forEulerValues->arr[i]->col[0]) << "%\t\t\t" << 
-                        rk34WoAdaptValues->arr[i]->col[0] << "\t\t\t\t" <<
-                        error(trueValues->arr[i]->col[0], rk34WoAdaptValues->arr[i]->col[0]) << "%" << 
-                        endl;
-        }
-        else {
-            cout << "Forward Euler Values(V1)\tForward Euler Values(V2)\tRK34 With Time Adapt Values(V1)\t\tRK34 With Time Adapt Values(V2)" << endl;
-            for (int i = 0; i < dim; i++)
-                cout << forEulerValues->arr[i]->col[0] << "\t\t\t\t" << 
-                        forEulerValues->arr[i]->col[1] << "\t\t\t\t" << 
-                        rk34WoAdaptValues->arr[i]->col[0] << "\t\t\t\t\t" <<
-                        rk34WoAdaptValues->arr[i]->col[1] << 
-                        endl;
-        }
+    static double calculate_Error(double trueValue, double calculated) {
+        return 100 * (trueValue - calculated)/trueValue;
     }
     
     static void matrix_Vector_Product(fullMat *mat, arrayMatCol *col, arrayMatCol *result) {
@@ -106,11 +89,28 @@ public:
         }
     }
     
+    static void convert_Vector_FullMat(vector<arrayMatCol*> *vect, arrayMat *mat) {
+        mat->dim = vect->size();
+        mat->rank = (*vect)[0]->rank;
+        mat->arr = new arrayMatCol*[mat->dim];
+        for (int i = 0; i < mat->dim; i++) {
+            mat->arr[i] = (*vect)[i];
+        }
+    }
+    
+    static void convert_Vector_Vector(vector<double> *vect1, fullVect *vect2) {
+        vect2->dim = vect1->size();
+        vect2->arr = (double *)calloc(vect2->dim, sizeof(double));
+        for (int i = 0; i < vect2->dim; i++) {
+            vect2->arr[i] = (*vect1)[i];
+        }
+    }
     
     static void create_FullMat(double *arr, fullMat *mat, int rank)
     {
         mat->arr = (double *)calloc(rank * rank, sizeof(double));
         mat->rank = rank;
+        
         for (int i = 0; i < rank; i++) {
             for (int j = 0; j < rank; j++)
                 mat->arr[(i * rank) + j] = arr[(i * rank) + j];
@@ -142,6 +142,20 @@ public:
             delT->arr[i] = step;
             currTime += step;
         }
+    }
+    
+    static void create_Values(int rank, arrayMat *values, fullVect *time)
+    {        
+        int dim = time->dim;
+        
+        values->arr = new arrayMatCol*[dim];
+        for (int i = 0; i < dim; i++) {
+            values->arr[i] = new arrayMatCol();
+            values->arr[i]->rank = rank;
+            values->arr[i]->col = (double *)calloc(rank, sizeof(double));
+        }
+        values->dim = dim;
+        values->rank = rank;
     }
     
     static void column_Scaling(double scalingConst, arrayMatCol *mat, arrayMatCol *result)
@@ -186,30 +200,6 @@ public:
             result->col[i] = matX->col[i] + matY->col[i];
     }
     
-    static void column_Subtraction(arrayMatCol *matX, arrayMatCol *matY, arrayMatCol *result) 
-    {
-        if (matX->rank != matY->rank) throw UNMATCHED_RANK;
-        
-        int rank = matX->rank;
-        result->rank = rank;
-        result->col = (double *)calloc(rank, sizeof(double));
-        
-        for (int i = 0; i < rank; i++)
-            result->col[i] = matX->col[i] - matY->col[i];
-    }
-    
-    static void column_Multiply(arrayMatCol *matX, arrayMatCol *matY, arrayMatCol *result) 
-    {
-        if (matX->rank != matY->rank) throw UNMATCHED_RANK;
-        
-        int rank = matX->rank;
-        result->rank = rank;
-        result->col = (double *)calloc(rank, sizeof(double));
-        
-        for (int i = 0; i < rank; i++)
-            result->col[i] = matX->col[i] * matY->col[i];
-    }
-    
     static void column_Exponential(arrayMatCol *mat, arrayMatCol *result) 
     {
         int rank = mat->rank;
@@ -222,10 +212,28 @@ public:
     
     
     
-    
-    
-    
-    
+    static void print_Comparison(fullVect *time, arrayMat *calValues, arrayMat *trueValues = NULL) 
+    {
+        int dim = calValues->dim;
+        
+        if (trueValues != NULL) {
+            cout << "Time\tTrue Values\tCalculated Values\tCalculated Error" << endl;
+            for (int i = 0; i < dim; i++)
+                cout << time->arr[i] << "\t" <<
+                        trueValues->arr[i]->col[0] << "\t\t" << 
+                        calValues->arr[i]->col[0] << "\t\t\t" << 
+                        calculate_Error(trueValues->arr[i]->col[0], calValues->arr[i]->col[0]) << "%\t\t\t" << 
+                        endl;
+        }
+        else {
+            cout << "Time\tCalculated Values(V1)\tCalculated Values(V2)" << endl;
+            for (int i = 0; i < dim; i++)
+                cout << time->arr[i] << "\t" <<
+                        calValues->arr[i]->col[0] << "\t\t\t\t" << 
+                        calValues->arr[i]->col[1] << "\t\t\t\t" << 
+                        endl;
+        }
+    }
     
     static void matrix_Print(arrayMat *mat)
     {

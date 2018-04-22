@@ -24,7 +24,6 @@ void Validation::fx(arrayMatCol *x, double t, arrayMatCol *result) {
 void Validation::true_Values(arrayMat *values, fullVect *time) {
     if (values->dim != time->dim) throw UNMATCHED_DIM;
 
-    
     int dim = values->dim;
     
     for (int i = 0; i < dim; i++) {
@@ -40,24 +39,29 @@ Validation::Validation() {
     double rank = 1;
     double initialValue = 2;
     
-    arrayMat *trueValues = new arrayMat();
+    arrayMat *trueValues1 = new arrayMat();
+    arrayMat *trueValues2 = new arrayMat();
     arrayMat *forwardEulerValues = new arrayMat();
     arrayMat *rk34WoAdaptValues = new arrayMat();
+    arrayMat *rk34WAdaptValues = new arrayMat();
     fullVect *time = new fullVect();
     fullVect *delT = new fullVect();
+    fullVect *timeAdapted = new fullVect();
     
-    Global_Functions::create_Time_Values(start, stop, step, rank, trueValues, time, delT);
+    Global_Functions::create_Time_Values(start, stop, step, rank, trueValues1, time, delT);
     Global_Functions::create_Time_Values(start, stop, step, rank, forwardEulerValues, time, delT);
     Global_Functions::create_Time_Values(start, stop, step, rank, rk34WoAdaptValues, time, delT);
+    Global_Functions::create_Time_Values(start, stop, step, rank, rk34WAdaptValues, time, delT);
     
     
-    ODE_Solvers *solver = new ODE_Solvers();
-    
-    solver->forward_Euler(initialValue, forwardEulerValues, time, delT, fx);
-    solver->rk34_Without_Adapt(initialValue, rk34WoAdaptValues, time, delT, fx);
-    true_Values(trueValues, time);
-    
-    Global_Functions::print_Comparison(forwardEulerValues, rk34WoAdaptValues, trueValues);
+    ODE_Solvers *solver = new ODE_Solvers(initialValue, time, delT, fx);
+    solver->forward_Euler(forwardEulerValues);
+    solver->rk34_Without_Adapt(rk34WoAdaptValues);
+    true_Values(trueValues1, time);
+    solver->rk34_With_Adapt(rk34WAdaptValues, timeAdapted, start, stop, step);
+    Global_Functions::create_Values(rank, trueValues2, timeAdapted);
+    true_Values(trueValues2, timeAdapted);
+    Global_Functions::print_Comparison(timeAdapted, rk34WAdaptValues, trueValues2);
 }
 
 Validation::~Validation() {
