@@ -13,28 +13,29 @@
 
 #include "Assignment_4_Header.h"
 #include "ODE_Solvers.h"
-/*
- * 
- */
-
-double fx(double x, double t) {
-    return (4 * exp(0.8 * t)) - (0.5 * x);
-}
-
-double x(double t) {
-    return ((4/1.3) * (exp(0.8*t) - exp(-0.5*t))) + (2 * exp(-0.5*t));
-}
+#include "Validation.h"
+#include "Circuit_Sim_1.h"
+#include "Circuit_Sim_2.h"
 
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv) {    
+    cout.precision(2);
+    cout.setf(ios::fixed);
     
-    ODE_Solvers *solvers = new ODE_Solvers();
-    solvers->forward_Euler(2,0,5,1,fx,x);
-    solvers->backward_Euler(2,0,5,1,fx,x);
-    solvers->trapezoidal_Euler(2,0,5,1,fx,x);
-    solvers->rk34_Without_Time_Adaptivity(2, 1, fx, x);
-    solvers->rk34_With_Time_Adaptivity(2, 1, fx, x);
-
+    cout << endl << endl << "####################################################Validating ODE Solvers####################################################" << endl << endl;
+    Validation *validate = new Validation();
+    
+    cout.precision(4);
+    
+    cout << endl << endl << "####################################################Circuit Simulation 1 with 0.2ns steps####################################################" << endl << endl;
+    Circuit_Sim_1 *sim1_02 = new Circuit_Sim_1(0.2);
+    cout << endl << endl << "####################################################Circuit Simulation 1 with 1ns steps####################################################" << endl << endl;
+    Circuit_Sim_1 *sim1_1 = new Circuit_Sim_1(1);
+    
+    cout << endl << endl << "####################################################Circuit Simulation 2 with 0.2ns steps####################################################" << endl<< endl;
+    Circuit_Sim_2 *sim2_02 = new Circuit_Sim_2(0.2);
+    cout << endl << endl << "####################################################Circuit Simulation 2 with 1ns steps####################################################" << endl << endl;
+    Circuit_Sim_2 *sim2_1 = new Circuit_Sim_2(1);
+    
     return 0;
 }
-
