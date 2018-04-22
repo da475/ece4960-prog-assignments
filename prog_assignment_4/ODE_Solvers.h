@@ -1,14 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
- * File:   ODE_Solvers.h
- * Author: Vishisht
- *
+ * Author: Vishisht, Deepak
+ * Netids: vmt28 and da475
+ * Copyright @ 2018 Vishisht and Deepak. All rights reserved
+
  * Created on April 18, 2018, 5:19 PM
+ * File: ODE_Solvers.h
+ * Desc: Forward Euler, Runge Kutta 34 and 
+ *       Time Adaptive Runge Kutta functions
  */
 
 #include "Assignment_4_Header.h"
@@ -16,7 +14,8 @@
 #ifndef ODE_SOLVERS_H
 #define ODE_SOLVERS_H
 
-class ODE_Solvers {
+class ODE_Solvers
+{
 public:
     void true_Values(arrayMat *values, fullVect *time);
     void forward_Euler(arrayMat *values);

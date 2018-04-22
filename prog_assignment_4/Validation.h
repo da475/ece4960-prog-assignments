@@ -1,14 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
- * File:   Validation.h
- * Author: Vishisht
- *
+ * Author: Vishisht, Deepak
+ * Netids: vmt28 and da475
+ * Copyright @ 2018 Vishisht and Deepak. All rights reserved
+
  * Created on April 21, 2018, 10:03 PM
+ * File: Validation.h
+ * Desc: Validation equations are declared here.
  */
 
 #include "Assignment_4_Header.h"
@@ -17,7 +14,8 @@
 #ifndef VALIDATION_H
 #define VALIDATION_H
 
-class Validation {
+class Validation
+{
 public:
     Validation();
     virtual ~Validation();

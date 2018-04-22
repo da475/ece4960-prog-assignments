@@ -1,19 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
- * File:   Circuit_Sim_1.cpp
- * Author: Vishisht
- * 
+ * Author: Vishisht, Deepak
+ * Netids: vmt28 and da475
+ * Copyright @ 2018 Vishisht and Deepak. All rights reserved
+
  * Created on April 21, 2018, 11:06 PM
+ * File: Circuit_Sim_1.cpp
+ * Desc: Simple RC equations are implemented here. This class
+ * calls ODE_Solvers to get the solution
  */
 
 #include "Circuit_Sim_1.h"
 
-void Circuit_Sim_1::fx(arrayMatCol *x, double t, arrayMatCol *result) {  
+// dx/dt implemented here
+// Exception handling is done by all the Global_Functions
+void Circuit_Sim_1::fx(arrayMatCol *x, double t, arrayMatCol *result)
+{  
     arrayMatCol *firstTerm = new arrayMatCol();
     arrayMatCol *lastTerm = new arrayMatCol();
     
@@ -41,36 +42,41 @@ void Circuit_Sim_1::fx(arrayMatCol *x, double t, arrayMatCol *result) {
     Global_Functions::column_Addition(firstTerm, lastTerm, result);
 }
 
-Circuit_Sim_1::Circuit_Sim_1(double Step) {
+// Constructor
+Circuit_Sim_1::Circuit_Sim_1(double Step)
+{
     double start = 0;
     double stop = 100e-9;
     double step = Step * 1e-9;
     double rank = 2;
     double initialValue = 0;
     
+    // Initialize the arrayMat and fullVect for values, time and delT
     arrayMat *calculatedValues = new arrayMat();
     fullVect *time = new fullVect();
     fullVect *delT = new fullVect();
     
+    // Initialize the solver class
     ODE_Solvers *solver = new ODE_Solvers(initialValue, time, delT, start, stop, step, fx);
     
+    // Solving ODE Using Forward Euler
     cout << endl << endl << endl << "-------------- Solving ODE Using Forward Euler --------------" << endl << endl;
-    
     Global_Functions::create_Time_Values(start, stop, step, rank, calculatedValues, time, delT);
     solver->forward_Euler(calculatedValues);
     Global_Functions::print_Comparison(time, calculatedValues);
     
+    // Solving ODE Using RK34 Without Time Adaptivity
     cout << endl << endl << endl << "-------------- Solving ODE Using RK34 Without Time Adaptivity --------------" << endl << endl;
-    
     solver->rk34(calculatedValues, time);
     Global_Functions::print_Comparison(time, calculatedValues);
     
+    // Solving ODE Using RK34 With Time Adaptivity
     cout << endl << endl << endl << "-------------- Solving ODE Using RK34 With Time Adaptivity --------------" << endl << endl;
-    
     solver->rk34(calculatedValues, time, true);
     Global_Functions::print_Comparison(time, calculatedValues);
 }
 
-
-Circuit_Sim_1::~Circuit_Sim_1() {
+// Destructor
+Circuit_Sim_1::~Circuit_Sim_1()
+{
 }
