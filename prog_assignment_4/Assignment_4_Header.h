@@ -11,6 +11,7 @@
  * Created on April 18, 2018, 5:54 PM
  */
 
+// Including all classes
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
@@ -28,6 +29,7 @@
 #define UNMATCHED_DIM 3
 #define IS_INF_NINF 4
 #define IS_NAN 5
+#define EXCEPTION_HANDLING false    // Macro to enable exception handling
 
 using namespace std;
 
@@ -35,22 +37,27 @@ using namespace std;
 extern double rel_tolerance;
 extern double abs_tolerance;
 
+// Custom variable types used
+// Vector saves time and delT in form of a vector
 typedef struct {
     double *arr;
     int dim;
 } fullVect;
 
+// Every matrix of values is saved as arrayMatCol
 typedef struct {
     double *col;
     int rank;
 } arrayMatCol;
 
+// Saves the complete values. Comprises an array of arrayMatCol
 typedef struct {
     arrayMatCol **arr;
     int rank;
     int dim;
 } arrayMat;
 
+// FullMat used for vector multiplications
 typedef struct {
     double *arr;
     int rank;
@@ -63,18 +70,39 @@ class Global_Functions
 private:
 public:
     
+    // Function: Calculate_Norm
+    // Calculates the norm of any arrayMatCol
+    // Output: Double
     static double calculate_Norm(arrayMatCol *value) {
         double sum;
-        for (int i = 0; i < value->rank; i++)
+        for (int i = 0; i < value->rank; i++) {
             sum += value->col[i] * value->col[i];
-        
+            #if EXCEPTION_HANDLING
+                if (isinf(sum)) throw IS_INF_NINF;
+                if (isnan(sum)) throw IS_NAN;
+            #endif  
+        }
+        double output = sqrt(sum);
+        #if EXCEPTION_HANDLING
+            if (isinf(output)) throw IS_INF_NINF;
+            if (isnan(output)) throw IS_NAN;
+        #endif  
         return sqrt(sum);
     }
     
+    // Function: Calculate_Error
+    // Calculates the error between the true value and calculated value in percentage
+    // Output: Double
     static double calculate_Error(double trueValue, double calculated) {
-        return 100 * (trueValue - calculated)/trueValue;
+        double output = 100 * abs(trueValue - calculated)/trueValue;
+        #if EXCEPTION_HANDLING
+            if (isinf(output)) throw IS_INF_NINF;
+            if (isnan(output)) throw IS_NAN;
+        #endif  
+        return output;
     }
     
+    // 
     static void matrix_Vector_Product(fullMat *mat, arrayMatCol *col, arrayMatCol *result) {
         
         int rank = mat->rank;
@@ -215,22 +243,23 @@ public:
     static void print_Comparison(fullVect *time, arrayMat *calValues, arrayMat *trueValues = NULL) 
     {
         int dim = calValues->dim;
-        
         if (trueValues != NULL) {
             cout << "Time\tTrue Values\tCalculated Values\tCalculated Error" << endl;
+            cout << "----------------------------------------------------------------" << endl;
             for (int i = 0; i < dim; i++)
                 cout << time->arr[i] << "\t" <<
                         trueValues->arr[i]->col[0] << "\t\t" << 
                         calValues->arr[i]->col[0] << "\t\t\t" << 
-                        calculate_Error(trueValues->arr[i]->col[0], calValues->arr[i]->col[0]) << "%\t\t\t" << 
+                        calculate_Error(trueValues->arr[i]->col[0], calValues->arr[i]->col[0]) << "%" <<
                         endl;
         }
         else {
-            cout << "Time\tCalculated Values(V1)\tCalculated Values(V2)" << endl;
+            cout << "Time\t\t\tCalculated Values(V1)\t\tCalculated Values(V2)" << endl;
+            cout << "-----------------------------------------------------------------------------------" << endl;
             for (int i = 0; i < dim; i++)
-                cout << time->arr[i] << "\t" <<
-                        calValues->arr[i]->col[0] << "\t\t\t\t" << 
-                        calValues->arr[i]->col[1] << "\t\t\t\t" << 
+                cout << time->arr[i] << "\t\t" <<
+                        calValues->arr[i]->col[0] << "\t\t\t" << 
+                        calValues->arr[i]->col[1] <<
                         endl;
         }
     }

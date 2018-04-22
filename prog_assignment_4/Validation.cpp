@@ -41,27 +41,33 @@ Validation::Validation() {
     
     arrayMat *trueValues1 = new arrayMat();
     arrayMat *trueValues2 = new arrayMat();
-    arrayMat *forwardEulerValues = new arrayMat();
-    arrayMat *rk34WoAdaptValues = new arrayMat();
-    arrayMat *rk34WAdaptValues = new arrayMat();
+    arrayMat *calculatedValues = new arrayMat();
     fullVect *time = new fullVect();
     fullVect *delT = new fullVect();
-    fullVect *timeAdapted = new fullVect();
+    
+    ODE_Solvers *solver = new ODE_Solvers(initialValue, time, delT, start, stop, step, fx);
+    
+    cout << endl << endl << endl << "-------------- Solving ODE Using Forward Euler --------------" << endl << endl;
     
     Global_Functions::create_Time_Values(start, stop, step, rank, trueValues1, time, delT);
-    Global_Functions::create_Time_Values(start, stop, step, rank, forwardEulerValues, time, delT);
-    Global_Functions::create_Time_Values(start, stop, step, rank, rk34WoAdaptValues, time, delT);
-    Global_Functions::create_Time_Values(start, stop, step, rank, rk34WAdaptValues, time, delT);
-    
-    
-    ODE_Solvers *solver = new ODE_Solvers(initialValue, time, delT, fx);
-    solver->forward_Euler(forwardEulerValues);
-    solver->rk34_Without_Adapt(rk34WoAdaptValues);
+    Global_Functions::create_Time_Values(start, stop, step, rank, calculatedValues, time, delT);
+    solver->forward_Euler(calculatedValues);
     true_Values(trueValues1, time);
-    solver->rk34_With_Adapt(rk34WAdaptValues, timeAdapted, start, stop, step);
-    Global_Functions::create_Values(rank, trueValues2, timeAdapted);
-    true_Values(trueValues2, timeAdapted);
-    Global_Functions::print_Comparison(timeAdapted, rk34WAdaptValues, trueValues2);
+    Global_Functions::print_Comparison(time, calculatedValues, trueValues1);
+    
+    cout << endl << endl << endl << "-------------- Solving ODE Using RK34 Without Time Adaptivity --------------" << endl << endl;
+    
+    solver->rk34(calculatedValues, time);
+    Global_Functions::create_Values(rank, trueValues2, time);
+    true_Values(trueValues2, time);
+    Global_Functions::print_Comparison(time, calculatedValues, trueValues2);
+    
+    cout << endl << endl << endl << "-------------- Solving ODE Using RK34 With Time Adaptivity --------------" << endl << endl;
+    
+    solver->rk34(calculatedValues, time, true);
+    Global_Functions::create_Values(rank, trueValues2, time);
+    true_Values(trueValues2, time);
+    Global_Functions::print_Comparison(time, calculatedValues, trueValues2);
 }
 
 Validation::~Validation() {

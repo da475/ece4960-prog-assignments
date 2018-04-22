@@ -46,25 +46,29 @@ Circuit_Sim_2::Circuit_Sim_2(double Step) {
     double stop = 100e-9;
     double step = Step * 1e-9;
     double rank = 2;
-    double initialValue = 2;
+    double initialValue = 2.5;
     
-    arrayMat *trueValues = new arrayMat();
-    arrayMat *forwardEulerValues = new arrayMat();
-    arrayMat *rk34WoAdaptValues = new arrayMat();
+    arrayMat *calculatedValues = new arrayMat();
     fullVect *time = new fullVect();
     fullVect *delT = new fullVect();
     
-    Global_Functions::create_Time_Values(start, stop, step, rank, trueValues, time, delT);
-    Global_Functions::create_Time_Values(start, stop, step, rank, forwardEulerValues, time, delT);
-    Global_Functions::create_Time_Values(start, stop, step, rank, rk34WoAdaptValues, time, delT);
+    ODE_Solvers *solver = new ODE_Solvers(initialValue, time, delT, start, stop, step, fx);
     
+    cout << endl << endl << endl << "-------------- Solving ODE Using Forward Euler --------------" << endl << endl;
     
-    ODE_Solvers *solver = new ODE_Solvers(initialValue, time, delT, fx);
+    Global_Functions::create_Time_Values(start, stop, step, rank, calculatedValues, time, delT);
+    solver->forward_Euler(calculatedValues);
+    Global_Functions::print_Comparison(time, calculatedValues);
     
-    solver->forward_Euler(forwardEulerValues);
-    solver->rk34_Without_Adapt(rk34WoAdaptValues);
+    cout << endl << endl << endl << "-------------- Solving ODE Using RK34 Without Time Adaptivity --------------" << endl << endl;
     
-    Global_Functions::print_Comparison(time, forwardEulerValues, rk34WoAdaptValues);
+    solver->rk34(calculatedValues, time);
+    Global_Functions::print_Comparison(time, calculatedValues);
+    
+    cout << endl << endl << endl << "-------------- Solving ODE Using RK34 With Time Adaptivity --------------" << endl << endl;
+    
+    solver->rk34(calculatedValues, time, true);
+    Global_Functions::print_Comparison(time, calculatedValues);
 }
 
 Circuit_Sim_2::~Circuit_Sim_2() {

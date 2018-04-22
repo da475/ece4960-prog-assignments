@@ -67,72 +67,15 @@ void ODE_Solvers::rk34_K4(arrayMatCol *k4, arrayMatCol *value, double time, doub
     this->func(newValue, time + delT, k4);
 }
 
-
-void ODE_Solvers::rk34_Without_Adapt(arrayMat *values) {
-    if (values->dim != this->time->dim || this->time->dim != this->delT->dim) throw UNMATCHED_RANK;
-    
-    initializeValue(values);
-    
-    int dim = values->dim;
-    int rank = values->rank;
-    
-    arrayMatCol *k1 = new arrayMatCol();
-    arrayMatCol *k2 = new arrayMatCol();
-    arrayMatCol *k3 = new arrayMatCol();
-    arrayMatCol *k4 = new arrayMatCol();
-    
-    k1->rank = rank;
-    k2->rank = rank;
-    k3->rank = rank;
-    k4->rank = rank;
-    
-    k1->col = (double *)calloc(rank, sizeof(double));
-    k2->col = (double *)calloc(rank, sizeof(double));
-    k3->col = (double *)calloc(rank, sizeof(double));
-    k4->col = (double *)calloc(rank, sizeof(double));
-    
-    for (int i = 0; i < dim - 1; i++) {
-        rk34_K1(k1, values->arr[i], this->time->arr[i]);
-        rk34_K2(k2, values->arr[i], this->time->arr[i], this->delT->arr[i], k1);
-        rk34_K3(k3, values->arr[i], this->time->arr[i], this->delT->arr[i], k2);
-        rk34_K4(k4, values->arr[i], this->time->arr[i], this->delT->arr[i], k3);
-        
-        arrayMatCol *k1Scaled = new arrayMatCol();
-        arrayMatCol *k2Scaled = new arrayMatCol();
-        arrayMatCol *k3Scaled = new arrayMatCol();
-        arrayMatCol *k4Scaled = new arrayMatCol();
-        arrayMatCol *kSum1 = new arrayMatCol();
-        arrayMatCol *kSum2 = new arrayMatCol();
-        arrayMatCol *kSum3 = new arrayMatCol();
-        arrayMatCol *kSumScaled = new arrayMatCol();
-        
-        Global_Functions::column_Scaling(7, k1, k1Scaled);
-        Global_Functions::column_Scaling(6, k2, k2Scaled);
-        Global_Functions::column_Scaling(8, k3, k3Scaled);
-        Global_Functions::column_Scaling(3, k4, k4Scaled);
-        
-        Global_Functions::column_Addition(k1Scaled, k2Scaled, kSum1);
-        Global_Functions::column_Addition(k3Scaled, k4Scaled, kSum2);
-        Global_Functions::column_Addition(kSum1, kSum2, kSum3);
-        
-        Global_Functions::column_Scaling(this->delT->arr[i] / 24.0, kSum3, kSumScaled);
-        
-        Global_Functions::column_Addition(values->arr[i], kSumScaled, values->arr[i + 1]);
-    }
-}
-
 double ODE_Solvers::new_TimeSteps(arrayMatCol *err_estimate, arrayMatCol *value, double delT) {
     double numerator = rel_tolerance;
     double errNorm = Global_Functions::calculate_Norm(err_estimate);
     double valueNorm = Global_Functions::calculate_Norm(value);
     double denominator = errNorm/(valueNorm + abs_tolerance);
-//    cout.precision(10);
-//    cout << numerator << "a" << denominator << endl;
-//    cout.precision(2);
     return delT * cbrt(numerator/denominator);
 }
 
-void ODE_Solvers::rk34_With_Adapt(arrayMat *valuesOriginal, fullVect*timeOiginal, double start, double stop, double step) {
+void ODE_Solvers::rk34(arrayMat *valuesOriginal, fullVect*timeOiginal, bool adapt) {
     
     int rank = valuesOriginal->rank;
     
@@ -146,8 +89,8 @@ void ODE_Solvers::rk34_With_Adapt(arrayMat *valuesOriginal, fullVect*timeOiginal
     for (int i = 0; i < rank; i++) initial->col[i] = this->initialValue;
     
     values->push_back(initial);
-    time->push_back(start);
-    delT->push_back(step);
+    time->push_back(this->start);
+    delT->push_back(this->step);
     
     arrayMatCol *k1 = new arrayMatCol();
     arrayMatCol *k2 = new arrayMatCol();
@@ -164,14 +107,12 @@ void ODE_Solvers::rk34_With_Adapt(arrayMat *valuesOriginal, fullVect*timeOiginal
     k3->col = (double *)calloc(rank, sizeof(double));
     k4->col = (double *)calloc(rank, sizeof(double));
     
-    
-    
-    int i = 0;
+    int iter = 0;
     do {
-        rk34_K1(k1, (*values)[i], (*time)[i]);
-        rk34_K2(k2, (*values)[i], (*time)[i], (*delT)[i], k1);
-        rk34_K3(k3, (*values)[i], (*time)[i], (*delT)[i], k2);
-        rk34_K4(k4, (*values)[i], (*time)[i], (*delT)[i], k3);
+        rk34_K1(k1, (*values)[iter], (*time)[iter]);
+        rk34_K2(k2, (*values)[iter], (*time)[iter], (*delT)[iter], k1);
+        rk34_K3(k3, (*values)[iter], (*time)[iter], (*delT)[iter], k2);
+        rk34_K4(k4, (*values)[iter], (*time)[iter], (*delT)[iter], k3);
         
         arrayMatCol *k1Scaled = new arrayMatCol();
         arrayMatCol *k2Scaled = new arrayMatCol();
@@ -181,6 +122,10 @@ void ODE_Solvers::rk34_With_Adapt(arrayMat *valuesOriginal, fullVect*timeOiginal
         arrayMatCol *kSum2 = new arrayMatCol();
         arrayMatCol *kSum3 = new arrayMatCol();
         arrayMatCol *kSumScaled = new arrayMatCol();
+        arrayMatCol *nextValue = new arrayMatCol();
+        nextValue->rank = rank;
+        nextValue->col = (double *)calloc(rank, sizeof(double));
+        values->push_back(nextValue);
         
         Global_Functions::column_Scaling(7, k1, k1Scaled);
         Global_Functions::column_Scaling(6, k2, k2Scaled);
@@ -190,53 +135,55 @@ void ODE_Solvers::rk34_With_Adapt(arrayMat *valuesOriginal, fullVect*timeOiginal
         Global_Functions::column_Addition(k1Scaled, k2Scaled, kSum1);
         Global_Functions::column_Addition(k3Scaled, k4Scaled, kSum2);
         Global_Functions::column_Addition(kSum1, kSum2, kSum3);
+
+        Global_Functions::column_Scaling((*delT)[iter] / 24.0, kSum3, kSumScaled);
+        Global_Functions::column_Addition((*values)[iter], kSumScaled, (*values)[iter + 1]);
+
+        if (adapt) {
         
-        Global_Functions::column_Scaling((*delT)[i] / 24.0, kSum3, kSumScaled);
-        
-        arrayMatCol *nextValue = new arrayMatCol();
-        nextValue->rank = rank;
-        nextValue->col = (double *)calloc(rank, sizeof(double));
-        values->push_back(nextValue);
-        
-        Global_Functions::column_Addition((*values)[i], kSumScaled, (*values)[i + 1]);
-        arrayMatCol *k1ErrorScaled = new arrayMatCol();
-        arrayMatCol *k2ErrorScaled = new arrayMatCol();
-        arrayMatCol *k3ErrorScaled = new arrayMatCol();
-        arrayMatCol *k4ErrorScaled = new arrayMatCol();
-        arrayMatCol *kErrorSum1 = new arrayMatCol();
-        arrayMatCol *kErrorSum2 = new arrayMatCol();
-        arrayMatCol *kErrorSum3 = new arrayMatCol();
-        arrayMatCol *err_Estimate = new arrayMatCol();
-        err_Estimate->rank = rank;
-        err_Estimate->col = (double *)calloc(rank, sizeof(double));
-        
-        Global_Functions::column_Scaling(-5, k1, k1ErrorScaled);
-        Global_Functions::column_Scaling(6, k2, k2ErrorScaled);
-        Global_Functions::column_Scaling(8, k3, k3ErrorScaled);
-        Global_Functions::column_Scaling(-9, k4, k4ErrorScaled);
-        
-        Global_Functions::column_Addition(k1ErrorScaled, k2ErrorScaled, kErrorSum1);
-        Global_Functions::column_Addition(k3ErrorScaled, k4ErrorScaled, kErrorSum2);
-        Global_Functions::column_Addition(kErrorSum1, kErrorSum2, kErrorSum3);
-        
-        Global_Functions::column_Scaling((*delT)[i] / 72.0, kErrorSum3, err_Estimate);
-        
-        delT->push_back(new_TimeSteps(err_Estimate, (*values)[i + 1], (*delT)[i]));
-        time->push_back((*time)[i] + (*delT)[i + 1]);
-        i++;
-        cout << (*time)[i] << " " << (*delT)[i] << endl;
-    } while((*time)[i] <= stop);
+            arrayMatCol *k1ErrorScaled = new arrayMatCol();
+            arrayMatCol *k2ErrorScaled = new arrayMatCol();
+            arrayMatCol *k3ErrorScaled = new arrayMatCol();
+            arrayMatCol *k4ErrorScaled = new arrayMatCol();
+            arrayMatCol *kErrorSum1 = new arrayMatCol();
+            arrayMatCol *kErrorSum2 = new arrayMatCol();
+            arrayMatCol *kErrorSum3 = new arrayMatCol();
+            arrayMatCol *err_Estimate = new arrayMatCol();
+            err_Estimate->rank = rank;
+            err_Estimate->col = (double *)calloc(rank, sizeof(double));
+
+            Global_Functions::column_Scaling(-5, k1, k1ErrorScaled);
+            Global_Functions::column_Scaling(6, k2, k2ErrorScaled);
+            Global_Functions::column_Scaling(8, k3, k3ErrorScaled);
+            Global_Functions::column_Scaling(-9, k4, k4ErrorScaled);
+
+            Global_Functions::column_Addition(k1ErrorScaled, k2ErrorScaled, kErrorSum1);
+            Global_Functions::column_Addition(k3ErrorScaled, k4ErrorScaled, kErrorSum2);
+            Global_Functions::column_Addition(kErrorSum1, kErrorSum2, kErrorSum3);
+
+            Global_Functions::column_Scaling((*delT)[iter] / 72.0, kErrorSum3, err_Estimate);
+            time->push_back((*time)[iter] + (*delT)[iter]);
+            delT->push_back(new_TimeSteps(err_Estimate, (*values)[iter + 1], (*delT)[iter]));
+        }
+        else {
+            time->push_back((*time)[iter] + (*delT)[iter]);
+            delT->push_back((*delT)[iter]);
+        }
+        iter++;
+    } while((*time)[iter] < this->stop);
     Global_Functions::convert_Vector_FullMat(values, valuesOriginal);
     Global_Functions::convert_Vector_Vector(time, timeOiginal);
 }
 
-ODE_Solvers::ODE_Solvers(double initialValue, fullVect *time, fullVect *delT, void(*func)(arrayMatCol*,double,arrayMatCol*)) {
+ODE_Solvers::ODE_Solvers(double initialValue, fullVect *time, fullVect *delT, double start, double stop, double step, void(*func)(arrayMatCol*,double,arrayMatCol*)) {
     this->initialValue = initialValue;
     this->time = time;
     this->delT = delT;
+    this->start = start;
+    this->stop = stop;
+    this->step = step;
     this->func = func;
 }
 
 ODE_Solvers::~ODE_Solvers() {
 }
-
